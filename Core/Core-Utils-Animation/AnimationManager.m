@@ -245,6 +245,7 @@ AnimationManager *animatinManager;
     UIView *frontView = [[UIView alloc] initWithFrame:view.bounds];
     frontView.userInteractionEnabled = NO;
     [view addSubview:frontView];
+    [frontView release];
     
     // Configure the particle emitter to the top edge of the screen
 	CAEmitterLayer *snowEmitter = [CAEmitterLayer layer];
