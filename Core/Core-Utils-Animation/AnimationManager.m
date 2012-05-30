@@ -245,6 +245,7 @@ AnimationManager *animatinManager;
     UIView *frontView = [[UIView alloc] initWithFrame:view.bounds];
     frontView.userInteractionEnabled = NO;
     [view addSubview:frontView];
+    [frontView release];
     
     // Configure the particle emitter to the top edge of the screen
 	CAEmitterLayer *snowEmitter = [CAEmitterLayer layer];
@@ -291,6 +292,7 @@ AnimationManager *animatinManager;
     UIView *frontView = [[UIView alloc] initWithFrame:view.bounds];
     frontView.userInteractionEnabled = NO;
     [view addSubview:frontView];
+    [frontView release];
     
     // Cells spawn in the bottom, moving up
 	CAEmitterLayer *fireworksEmitter = [CAEmitterLayer layer];
