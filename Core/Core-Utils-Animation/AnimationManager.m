@@ -7,6 +7,7 @@
 //
 
 #import "AnimationManager.h"
+#import "DeviceDetection.h"
 
 AnimationManager *animatinManager;
 
@@ -244,6 +245,7 @@ AnimationManager *animatinManager;
     UIView *frontView = [[UIView alloc] initWithFrame:view.bounds];
     frontView.userInteractionEnabled = NO;
     [view addSubview:frontView];
+    [frontView release];
     
     // Configure the particle emitter to the top edge of the screen
 	CAEmitterLayer *snowEmitter = [CAEmitterLayer layer];
@@ -257,7 +259,7 @@ AnimationManager *animatinManager;
 	// Configure the snowflake emitter cell
 	CAEmitterCell *snowflake = [CAEmitterCell emitterCell];
 	
-	snowflake.birthRate		= 1.0;
+	snowflake.birthRate		= 5.0;
 	snowflake.lifetime		= 20.0;
 	
 	snowflake.velocity		= -100;				// falling down slowly
@@ -290,6 +292,7 @@ AnimationManager *animatinManager;
     UIView *frontView = [[UIView alloc] initWithFrame:view.bounds];
     frontView.userInteractionEnabled = NO;
     [view addSubview:frontView];
+    [frontView release];
     
     // Cells spawn in the bottom, moving up
 	CAEmitterLayer *fireworksEmitter = [CAEmitterLayer layer];
@@ -304,15 +307,26 @@ AnimationManager *animatinManager;
 	// Create the rocket
 	CAEmitterCell* rocket = [CAEmitterCell emitterCell];
 	
-	rocket.birthRate		= 0.1;
-	rocket.emissionRange	= 0.25 * M_PI;  // some variation in angle
-	rocket.velocity			= 380;
-	rocket.velocityRange	= 100;
-	rocket.yAcceleration	= 75;
-	rocket.lifetime			= 1.02;	// we cannot set the birthrate < 1.0 for the burst
-	
+
+
+	if ([DeviceDetection isIPAD]) {
+        rocket.velocity			= 380 * 2.2;
+        rocket.velocityRange	= 100 * 2;
+        rocket.yAcceleration	= 75 * 2;
+        rocket.emissionRange	= 0.25 * M_PI / 2;  // some variation in angle
+        rocket.lifetime			= 1.02;    
+    	rocket.birthRate		= 0.1 * 0.2;
+        rocket.scale			= 0.2 * 2.1;
+    }else{
+        rocket.velocity			= 380;
+        rocket.velocityRange	= 100;
+        rocket.yAcceleration	= 75;
+        rocket.emissionRange	= 0.25 * M_PI;
+        rocket.lifetime			= 1.02;    
+        rocket.birthRate		= 0.1;
+        rocket.scale			= 0.2;
+    }
 	rocket.contents			= (id) [[UIImage imageNamed:@"fireworks1"] CGImage];
-	rocket.scale			= 0.2;
 	rocket.color			= [[UIColor redColor] CGColor];	
 	rocket.greenRange		= 1.0;		// different colors
 	rocket.redRange			= 1.0;
@@ -325,9 +339,16 @@ AnimationManager *animatinManager;
 	// we change the color here, since the sparks inherit its value
 	CAEmitterCell* burst = [CAEmitterCell emitterCell];
 	
-	burst.birthRate			= 1.0;		// at the end of travel
+	burst.birthRate			= 1;		// at the end of travel
 	burst.velocity			= 0;
-	burst.scale				= 2.5;
+    
+    if ([DeviceDetection isIPAD]) {
+        burst.scale				= 2.5 * 1.5;        
+    }else{
+        burst.scale				= 2.5;        
+    }
+
+    
 	burst.redSpeed			=-1.5;		// shifting
 	burst.blueSpeed			=+1.5;		// shifting
 	burst.greenSpeed		=+1.0;		// shifting

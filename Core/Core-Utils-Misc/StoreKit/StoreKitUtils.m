@@ -23,7 +23,8 @@
 
 @implementation StoreKitUtils
 
-+ (TransactionVerifyResult)verifyReceipt:(NSString*)transactionReceipt
++ (TransactionVerifyResult)verifyReceipt:(NSString*)transactionReceipt 
+                         productIdPrefix:(NSString*)productIdPrefix
 {
     TransactionVerifyResult verifyResult = VERIFY_UNKNOWN;
     
@@ -53,7 +54,13 @@
             return verifyResult;
         
         if ([[dict objectForKey:@"status"] intValue] == 0){
-            verifyResult = VERIFY_OK;
+            
+            if ([[[dict objectForKey:@"receipt"] objectForKey:@"product_id"] hasPrefix:productIdPrefix] == YES){
+                verifyResult = VERIFY_OK;                
+            }
+            else{
+                verifyResult = VERIFY_INVALID_PRODUCT_ID;
+            }                            
         }
         else{
             verifyResult = [[dict objectForKey:@"status"] intValue];
