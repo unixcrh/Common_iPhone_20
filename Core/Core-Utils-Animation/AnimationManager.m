@@ -238,6 +238,10 @@ AnimationManager *animatinManager;
 
 + (void)snowAnimationAtView:(UIView *)view image:(UIImage *)image
 {
+    if ([DeviceDetection isOS5] == NO){
+        return;
+    }
+    
     if (image == nil) {
         image = [UIImage imageNamed:@"snow.png"];
     }
@@ -288,6 +292,9 @@ AnimationManager *animatinManager;
 }
 + (void)fireworksAnimationAtView:(UIView *)view
 {
+    if ([DeviceDetection isOS5] == NO){
+        return;
+    }
     
     UIView *frontView = [[UIView alloc] initWithFrame:view.bounds];
     frontView.userInteractionEnabled = NO;
