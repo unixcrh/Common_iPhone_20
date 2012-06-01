@@ -17,7 +17,7 @@
 
 @implementation ReviewRequest
 
-@synthesize appId, appName, minUsageCount, promptInterval;
+@synthesize appId, appName, minUsageCount, promptInterval, delegate;
 
 + (ReviewRequest*)startReviewRequest:(NSString*)appIdValue appName:(NSString*)appNameValue isTest:(BOOL)isTest
 {
@@ -30,9 +30,11 @@
     BOOL randomAsk = ((time(0) % 2) == 0);    
 	if ([review shouldAskForReviewAtLaunch] && randomAsk){
 		[review askForReview];
+        return review;
 	}	
-    
-    return review;
+    else{
+        return nil;
+    }        
 }
 
 - (id)initWithAppId:(NSString*)appIdValue appName:(NSString*)appNameValue
@@ -71,11 +73,8 @@
 		case 1: // rate it now
 		{
 			NSString* version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-			[defaults setValue:version forKey:KeyReviewed];
-			
-//			[UIUtils openApp:appId];
-            [UIUtils gotoReview:appId];        
-			
+			[defaults setValue:version forKey:KeyReviewed];			
+            [UIUtils gotoReview:appId];        			
 			break;
 		}
 			
@@ -87,7 +86,10 @@
 	}
 	
 	[defaults setInteger:0 forKey:KeySessionCountSinceLastAsked];
-	[self release];
+    
+    if ([delegate respondsToSelector:@selector(reviewDone)]){
+        [delegate reviewDone];
+    }
 }
 
 
@@ -135,7 +137,7 @@
 	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 	const int count = [defaults integerForKey:KeySessionCountSinceLastAsked];
 	[defaults setInteger:count+1 forKey:KeySessionCountSinceLastAsked];
-	
+	 
 	if (count < minUsageCount){
 		NSLog(@"next time count is %d", count);		
 		return FALSE;

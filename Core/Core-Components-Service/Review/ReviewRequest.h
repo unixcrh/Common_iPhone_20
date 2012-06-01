@@ -1,6 +1,12 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol ReviewRequestDelegate <NSObject>
+
+- (void)reviewDone;
+
+@end
+
 @interface ReviewRequest : NSObject <UIAlertViewDelegate>
 {
 	NSString* appId;
@@ -17,7 +23,7 @@
 - (BOOL)shouldAskForReviewAtLaunch;
 - (void)askForReview;
 
-
+@property (nonatomic, assign) id<ReviewRequestDelegate> delegate;
 @property (nonatomic, retain) NSString* appId;
 @property (nonatomic, retain) NSString* appName;
 @property (nonatomic) int		  minUsageCount;	// at least your users shall use this app for minmum times
