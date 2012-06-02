@@ -120,10 +120,9 @@
     dispatch_async(self.workingQueue, ^{
         
         
-        if (asyncSocket && ([self.asyncSocket isConnected] == YES)){
-            PPDebug(@"Connecting to Host(%@) Port(%d) But Already Connected?", host, port);
-            return;
-        }
+//        if (asyncSocket && ([self.asyncSocket isConnected] == YES)){
+//            [self.asyncSocket disconnect];
+//        }
         
         // set flag
         self.needReconnect = autoReconnect;
