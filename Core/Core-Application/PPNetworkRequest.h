@@ -76,5 +76,13 @@ typedef void (^PPNetworkResponseBlock)(NSDictionary* dict, CommonNetworkOutput* 
                        outputFormat:(int)outputFormat
                              output:(CommonNetworkOutput*)output;
 
++ (CommonNetworkOutput*)sendPostRequest:(NSString*)baseURL
+                                   data:(NSData*)data
+                    constructURLHandler:(ConstructURLBlock)constructURLHandler
+                        responseHandler:(PPNetworkResponseBlock)responseHandler
+                           outputFormat:(int)outputFormat
+                                 output:(CommonNetworkOutput*)output;
+
+
 @end
 
