@@ -33,5 +33,4 @@
 	return [self cellForRowAtIndexPath:indexPath];	
 }
 
-
 @end

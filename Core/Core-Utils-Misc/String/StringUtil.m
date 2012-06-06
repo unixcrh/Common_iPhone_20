@@ -396,7 +396,6 @@ BOOL NSStringIsValidChinese(NSString *checkString)
     return [[[NSString alloc] initWithData:gb2312data encoding:encoding] autorelease];    
 }
 
-
 @end
 
 //return [retArray sortedArrayUsingComparator:^(id obj1, id obj2) {					
