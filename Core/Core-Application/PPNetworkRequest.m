@@ -225,6 +225,9 @@
     [request setTimeOutSeconds:NETWORK_TIMEOUT];
     [request setRequestMethod:@"POST"];
     [request appendPostData:data];                  // to be tested
+    [request setPostLength:[data length]];
+    
+    PPDebug(@"[SEND] Post Data=%@ Length=%d", [data description], [data length]);
     
     int startTime = time(0);
     PPDebug(@"[SEND] URL=%@", [url description]);    
