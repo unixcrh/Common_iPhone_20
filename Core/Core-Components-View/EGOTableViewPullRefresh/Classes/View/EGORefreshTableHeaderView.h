@@ -31,36 +31,49 @@ typedef enum{
 	EGOOPullRefreshPulling = 0,
 	EGOOPullRefreshNormal,
 	EGOOPullRefreshLoading,	
-	EGOOPullRefreshUpToDate,
 } EGOPullRefreshState;
 
+@protocol EGORefreshTableHeaderDelegate;
 @interface EGORefreshTableHeaderView : UIView {
 	
-	UILabel *lastUpdatedLabel;
-	UILabel *statusLabel;
-	CALayer *arrowImage;
-	UIActivityIndicatorView *activityView;
-	
+	id _delegate;
 	EGOPullRefreshState _state;
-	UIColor *bottomBorderColor;
-	CGFloat bottomBorderThickness;
-    CALayer *_backgroundImage;
+
+	UILabel *_lastUpdatedLabel;
+	UILabel *_statusLabel;
+	CALayer *_arrowImage;
+	UIActivityIndicatorView *_activityView;
+	
 
 }
 
-@property(nonatomic,assign) EGOPullRefreshState state;
-@property(nonatomic,retain) UIColor *bottomBorderColor;
-@property(nonatomic,assign) CGFloat bottomBorderThickness;
-@property(nonatomic,retain) CALayer *_backgroundImage;
+@property(nonatomic,assign) id <EGORefreshTableHeaderDelegate> delegate;
 
-- (id)initWithFrameRelativeToFrame:(CGRect)originalFrame;
-- (void)setLastRefreshDate:(NSDate*)date;
-- (void)setCurrentDate;
-- (void)setState:(EGOPullRefreshState)aState;
-- (void)setFontColor:(UIColor *)color;
-- (void)setLastUpdateLabelFont:(UIFont *)font;
-- (void)setStatusLabelFont:(UIFont *)font;
+- (void)refreshLastUpdatedDate;
 
-- (void)setBackgroundImage:(UIImage *)image;
+// Should call in UIScrollViewDelegate Method:
+// - (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView;
+
+// Should call in UIScrollViewDelegate Method:
+//- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+- (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView;
+
+// After finished loading data source, call this method to hide refresh view.
+- (void)egoRefreshScrollViewDataSourceDidFinishedLoading:(UIScrollView *)scrollView;
+
+@end
+
+
+@protocol EGORefreshTableHeaderDelegate
+// When refresh table header is triggered to refresh, this method will be called.
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view;
+
+// Asked whether data source is loading or not.
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view;
+
+@optional
+// Asked the last updated date.
+- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view;
 
 @end
