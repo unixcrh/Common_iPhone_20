@@ -1,5 +1,5 @@
 //
-//  EGORefreshTableHeaderView.h
+//  EGORefreshTableFooterView.h
 //  Demo
 //
 //  Created by Devin Doty on 10/14/09October14.
@@ -24,30 +24,31 @@
 //  THE SOFTWARE.
 //
 
+
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
 typedef enum{
-	EGOOPullRefreshPulling = 0,
-	EGOOPullRefreshNormal,
-	EGOOPullRefreshLoading,	
-} EGOPullRefreshState;
+	EGOOPullUpRefreshPulling = 0,
+	EGOOPullUpRefreshNormal,
+	EGOOPullUpRefreshLoading,	
+} EGOPullUpRefreshState;
 
-@protocol EGORefreshTableHeaderDelegate;
-@interface EGORefreshTableHeaderView : UIView {
+@protocol EGORefreshTableFooterDelegate;
+@interface EGORefreshTableFooterView : UIView {
 	
 	id _delegate;
-	EGOPullRefreshState _state;
+	EGOPullUpRefreshState _state;
 
 	UILabel *_lastUpdatedLabel;
 	UILabel *_statusLabel;
 	CALayer *_arrowImage;
 	UIActivityIndicatorView *_activityView;
-	
-
+    
+    
 }
 
-@property(nonatomic,assign) id <EGORefreshTableHeaderDelegate> delegate;
+@property(nonatomic,assign) id <EGORefreshTableFooterDelegate> delegate;
 
 - (void)refreshLastUpdatedDate;
 
@@ -65,15 +66,15 @@ typedef enum{
 @end
 
 
-@protocol EGORefreshTableHeaderDelegate
-// When refresh table header is triggered to refresh, this method will be called.
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view;
+@protocol EGORefreshTableFooterDelegate
+// When refresh table footer is triggered to refresh, this method will be called.
+- (void)egoRefreshTableFooterDidTriggerRefresh:(EGORefreshTableFooterView*)view;
 
 // Asked whether data source is loading or not.
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view;
+- (BOOL)egoRefreshTableFooterDataSourceIsLoading:(EGORefreshTableFooterView*)view;
 
 @optional
 // Asked the last updated date.
-- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view;
+- (NSDate*)egoRefreshTableFooterDataSourceLastUpdated:(EGORefreshTableFooterView*)view;
 
 @end

@@ -12,6 +12,12 @@
 #import "LogUtil.h"
 #import "DeviceDetection.h"
 
+@interface PPTableViewController ()
+@property (assign, nonatomic) BOOL reloading;
+@property (assign, nonatomic) BOOL loadingMore;
+
+@end
+
 @implementation PPTableViewController
 
 @synthesize dataList;
@@ -38,8 +44,12 @@
 @synthesize sectionLabel;
 
 @synthesize reloading=_reloading;
+@synthesize loadingMore = _loadingMore;
 @synthesize refreshHeaderView;
+@synthesize refreshFooterView;
 @synthesize supportRefreshHeader;
+@synthesize supportRefreshFooter;
+@synthesize noMoreData = _noMoreData;
 @synthesize moreLoadingView;
 @synthesize moreRowIndexPath;
 
@@ -47,7 +57,6 @@
 
 @synthesize tappedIndexPath;
 @synthesize controlRowIndexPath;
-@synthesize refreshHeaderViewEnable;
 
 @synthesize reloadVisibleCellTimer;
 @synthesize enableReloadVisableCellTimer;
@@ -145,15 +154,30 @@
         return;
     
     if (refreshHeaderView == nil) {
-        self.refreshHeaderView = [[[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0, 0.0f - self.dataTableView.bounds.size.height, /*304.0f,*/ self.dataTableView.bounds.size.width, self.dataTableView.bounds.size.height)] autorelease];
-        refreshHeaderView.backgroundColor = [UIColor colorWithRed:226.0/255.0 green:231.0/255.0 blue:237.0/255.0 alpha:1.0];
-        refreshHeaderView.bottomBorderThickness = 1.0;
-        [self.dataTableView addSubview:refreshHeaderView];
-        self.dataTableView.showsVerticalScrollIndicator = YES;
-        [self.refreshHeaderView setFontColor:[UIColor colorWithRed:111/255.0 green:104/255.0 blue:94/255.0 alpha:1.0]];
-        UIImage *back = [[UIImage imageNamed:@"tu_185.png"]stretchableImageWithLeftCapWidth:0 topCapHeight:0];
-        [self.refreshHeaderView setBackgroundImage:back];
+        self.refreshHeaderView = [[[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.dataTableView.bounds.size.height, self.dataTableView.frame.size.width, self.dataTableView.bounds.size.height)] autorelease];
+		refreshHeaderView.delegate = self;
+		[self.dataTableView addSubview:refreshHeaderView];
     }
+    
+    //  update the last update date
+    [refreshHeaderView refreshLastUpdatedDate];
+}
+
+- (void)createRefreshFooterView
+{
+    if (!supportRefreshFooter)
+        return;
+    
+	if (self.refreshFooterView == nil) {
+		refreshFooterView = [[EGORefreshTableFooterView alloc] initWithFrame: CGRectMake(0.0f, self.dataTableView.contentSize.height, self.dataTableView.frame.size.width, 650)];
+		refreshFooterView.delegate = self;
+		[self.dataTableView addSubview:refreshFooterView];
+
+		refreshFooterView.hidden = YES;
+	}
+	
+	//  update the last update date
+	[refreshFooterView refreshLastUpdatedDate];
 }
 
 - (void)setRefreshHeaderViewFrame:(CGRect)frame
@@ -161,39 +185,31 @@
     self.refreshHeaderView.frame = frame;
 }
 
-- (void)clearRefreshFlag
+- (void)setRefreshFooterViewFrame:(CGRect)frame
 {
-    needRefreshNow = NO;
+    self.refreshFooterView.frame = frame;
 }
 
 - (void)viewDidLoad
 {
-    needRefreshNow = NO;
-    
-    [self setRefreshHeaderViewEnable:YES];
-    
 	dataTableView.delegate = self;
 	dataTableView.dataSource = self;
 	
 	[self resetSelectRowAndSection];	
 	[super viewDidLoad];
     [self createRefreshHeaderView];
+    [self createRefreshFooterView];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
     self.refreshHeaderView = nil;
+    self.refreshFooterView = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    if (needRefreshNow == YES){
-        [self reloadTableViewDataSource];
-//        [self.dataTableView scrollRectToVisible:refreshHeaderView.frame animated:YES];
-        needRefreshNow = NO;
-    }
-    
 	[dataTableView reloadData];	
     [self checkReloadVisiableCellTimer];
         
@@ -316,6 +332,7 @@
 	[singleCellImageName release];
 
     [refreshHeaderView release];
+    [refreshFooterView release];
     [tappedIndexPath release];
     [controlRowIndexPath release];
     [moreRowIndexPath release];
@@ -469,130 +486,88 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{	
 	
-    if (!supportRefreshHeader)
-        return;
-    
-    [self.refreshHeaderView setHidden:![self isRefreshHeaderViewEnable]];
-    if (![self isRefreshHeaderViewEnable]) {
-        return;
+    if (supportRefreshHeader)
+    {
+        [refreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
     }
     
-	if (scrollView.isDragging) {        
-		if (!_reloading && refreshHeaderView.state == EGOOPullRefreshPulling && scrollView.contentOffset.y > -65.0f && scrollView.contentOffset.y < 0.0f) {
-			[refreshHeaderView setState:EGOOPullRefreshNormal];
-		} else if (!_reloading && refreshHeaderView.state == EGOOPullRefreshNormal && scrollView.contentOffset.y < -65.0f) {
-			[refreshHeaderView setState:EGOOPullRefreshPulling];
-		}
-	}
+    if (supportRefreshFooter) {
+        [refreshFooterView egoRefreshScrollViewDidScroll:scrollView];
+
+    }
+    
+    return;
+    
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
 	
-    if (!supportRefreshHeader)
-        return;
-    
-    if (![self isRefreshHeaderViewEnable]) {
-        return;
+    if (supportRefreshHeader)
+    {
+        [refreshHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
     }
-    
-	if (scrollView.contentOffset.y <= - 65.0f && !_reloading) {
-		_reloading = YES;
-		[self reloadTableViewDataSource];
-		[refreshHeaderView setState:EGOOPullRefreshLoading];
-		[UIView beginAnimations:nil context:NULL];
-		[UIView setAnimationDuration:0.2];
-		self.dataTableView.contentInset = UIEdgeInsetsMake(60.0f, 0.0f, 0.0f, 0.0f);
-		[UIView commitAnimations];
-	}
+
+    if (supportRefreshFooter) {
+        [refreshFooterView egoRefreshScrollViewDidEndDragging:scrollView];
+    }
 }
 
 #pragma mark -
 #pragma mark refreshHeaderView Methods
 
-- (void)dataSourceDidFinishLoadingNewData{
-	
-    if (!supportRefreshHeader)
-        return;
-    
-    if (![self isRefreshHeaderViewEnable]) {
-        return;
-    }
-    
-	_reloading = NO;
-	
-	[UIView beginAnimations:nil context:NULL];
-	[UIView setAnimationDuration:.3];
-	[self.dataTableView setContentInset:UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f)];
-	[UIView commitAnimations];
-	
-	[refreshHeaderView setState:EGOOPullRefreshNormal];
-    [self.refreshHeaderView setCurrentDate];
-}
-
-#pragma mark For Sub Class to override and implement
+#pragma mark - For Subclass to re-write
+// When "pull down to refresh" in triggered, this function will be called  
 - (void) reloadTableViewDataSource
 {
-	NSLog(@"Please override reloadTableViewDataSource");    
-    
-    // after finish loading data, please call the following codes
-	[refreshHeaderView setCurrentDate];  	
-	[self dataSourceDidFinishLoadingNewData];
-    
+	NSLog(@"Please override reloadTableViewDataSource in subclass");  
 }
 
+// After finished loading data source, call this method to hide refresh view.
+- (void)dataSourceDidFinishLoadingNewData{
+	
+    if (supportRefreshHeader)
+    {
+        _reloading = NO;
+        [refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.dataTableView]; 
+    }
+}
+
+#pragma mark - For Subclass to re-write
+// When "pull down to refresh" in triggered, this function will be called  
+- (void) loadMoreTableViewDataSource
+{
+    NSLog(@"Please override loadMoreTableViewDataSource in subclass");  
+}
+
+// After finished loading data source, call this method to hide refresh view.
+- (void)dataSourceDidFinishLoadingMoreData{
+    if (supportRefreshFooter) {
+//        _loadingMore = NO;
+        _reloading = NO;
+        [refreshFooterView egoRefreshScrollViewDataSourceDidFinishedLoading:self.dataTableView]; 
+    }
+}
 
 #pragma mark Table View Delegate
-
-//- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)aTableView 
-//{
-//	NSMutableArray* array = [NSMutableArray arrayWithArray:[ArrayOfCharacters getArray]];
-//	[array addObject:kSectionNull];
-//	return array;
-//	
-////		NSMutableArray *indices = [NSMutableArray arrayWithObject:UITableViewIndexSearch];
-////		return nil;
-//}
-//
-//
-//- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
-//{
-//	return [groupData sectionForLetter:title];
-//}
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
 	
 	NSString *sectionHeader = [groupData titleForSection:section];	
 	
-//	switch (section) {
-//		case <#constant#>:
-//			<#statements#>
-//			break;
-//		default:
-//			break;
-//	}
-	
 	return sectionHeader;
 }
 
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-//{
-//	return [self getSectionView:tableView section:section];
-//}
 
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-//{
-//	return sectionImageHeight;
-//}
-
-//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-//{
-//	return [self getFooterView:tableView section:section];
-//}
-
-//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-//{
-//	return footerImageHeight;
-//}
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (!_noMoreData) {
+        CGFloat height = MAX(self.dataTableView.contentSize.height, self.dataTableView.frame.size.height);
+        self.dataTableView.contentSize = CGSizeMake(self.dataTableView.contentSize.width, height);
+        refreshFooterView.frame = CGRectMake(0.0f, self.dataTableView.contentSize.height, self.dataTableView.frame.size.width, 650);
+        refreshFooterView.hidden = NO;
+    }else {
+        refreshFooterView.hidden = YES;
+    }
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -644,10 +619,7 @@
 	}
 	
 	[self setCellBackground:cell row:row count:count];
-	
-	// NSObject* dataObject = [dataList objectAtIndex:row];
-	// PPContact* contact = (PPContact*)[groupData dataForSection:indexPath.section row:indexPath.row];	
-	
+
 	return cell;
 	
 }
@@ -656,123 +628,6 @@
 {
     NSLog(@"select more row, default implementation");
 }
-
-/* just for copy purpose
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	
-    if ([self isMoreRowIndexPath:indexPath]){
-        [self.moreLoadingView startAnimating];
-        if ([self respondsToSelector:@selector(didSelectMoreRow)]){
-            [self performSelector:@selector(didSelectMoreRow)];
-        }
-        
-        // delete control row and tap row
-        if (controlRowIndexPath){
-            
-            [self updateMoreRowIndexPath];
-            
-            NSIndexPath* indexPathForDelete = [self.controlRowIndexPath retain];
-            self.tappedIndexPath = nil;
-            self.controlRowIndexPath = nil;
-
-            [self.dataTableView beginUpdates];        
-            [self.dataTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPathForDelete] withRowAnimation:UITableViewRowAnimationFade];
-            [self.dataTableView endUpdates];
-
-            [indexPathForDelete release];
-            
-        }
-        return;
-    }
-    
-    if ([indexPath isEqual:self.tappedIndexPath]){
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-    
-    indexPath = [self modelIndexPathForIndexPath:indexPath];
-    NSIndexPath* indexPathForDelete = [self.controlRowIndexPath retain];
-    
-    if ([indexPath isEqual:self.tappedIndexPath]){
-        self.tappedIndexPath = nil;
-        self.controlRowIndexPath = nil;
-    }
-    else{
-        self.tappedIndexPath = indexPath;
-        self.controlRowIndexPath = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section];
-    }        
-    
-    if (controlRowIndexPath)
-        self.moreRowIndexPath = [NSIndexPath indexPathForRow:[dataList count]+1 inSection:moreRowSection];
-    else
-        [self updateMoreRowIndexPath];
-    
-    [self.dataTableView beginUpdates];        
-    if (indexPathForDelete){                
-        [self.dataTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPathForDelete] withRowAnimation:UITableViewRowAnimationFade];
-    }
-    if (self.controlRowIndexPath){                
-        [self.dataTableView insertRowsAtIndexPaths:[NSArray arrayWithObject:self.controlRowIndexPath] withRowAnimation:UITableViewRowAnimationFade];        
-    }    
-    [self.dataTableView endUpdates];
-    
-    [indexPathForDelete release];
-}
-
-- (NSIndexPath*)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // the code below is only valid when control row is used
-    if ([indexPath isEqual:self.controlRowIndexPath]){
-        return self.tappedIndexPath;
-    }
-    return indexPath;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		
-		if (indexPath.row > [dataList count] - 1)
-			return;
-
-		// take delete action below, update data list
-		// NSObject* dataObject = [dataList objectAtIndex:indexPath.row];		
-		
-		// update table view
-		
-	}
-	
-}
-*/
-
-
-
-//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-//{
-//	// create the parent view that will hold header Label
-//	UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(10.0, 0.0, 300.0, 44.0)];
-//	
-//	// create the button object
-//	UILabel * headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-//	headerLabel.backgroundColor = [UIColor clearColor];
-//	headerLabel.opaque = NO;
-//	headerLabel.textColor = [UIColor blackColor];
-//	headerLabel.highlightedTextColor = [UIColor whiteColor];
-//	headerLabel.font = [UIFont boldSystemFontOfSize:20];
-//	headerLabel.frame = CGRectMake(10.0, 0.0, 300.0, 44.0);
-//	
-//	// If you want to align the header text as centered
-//	// headerLabel.frame = CGRectMake(150.0, 0.0, 300.0, 44.0);
-//	
-//	headerLabel.text = <Put here whatever you want to display> // i.e. array element
-//	[customView addSubview:headerLabel];
-//	
-//	return customView;
-//}
-//
-//- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-//{
-//	return 44.0;
-//}
 
 - (void)showTipsOnTableView:(NSString *)text
 { 
@@ -794,5 +649,44 @@
     [self.tipsLabel setHidden:YES];
 }
 
+#pragma mark -
+#pragma mark EGORefreshTableHeaderDelegate Methods
+
+- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view{
+    _reloading = YES;
+	[self reloadTableViewDataSource];	
+}
+
+- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view{
+	
+	return _reloading; // should return if data source model is reloading
+	
+}
+
+- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view{
+	
+	return [NSDate date]; // should return date data source was last changed
+}
+
+#pragma mark -
+#pragma mark EGORefreshTableHeaderDelegate Methods
+
+- (void)egoRefreshTableFooterDidTriggerRefresh:(EGORefreshTableHeaderView*)view{
+//    _loadingMore = YES;
+    _reloading = YES;
+	[self loadMoreTableViewDataSource];	
+}
+
+- (BOOL)egoRefreshTableFooterDataSourceIsLoading:(EGORefreshTableHeaderView*)view{
+    
+    return _reloading;
+//	return _loadingMore; // should return if data source model is reloading
+	
+}
+
+- (NSDate*)egoRefreshTableFooterDataSourceLastUpdated:(EGORefreshTableHeaderView*)view{
+
+	return [NSDate date]; // should return date data source was last changed
+}
 
 @end

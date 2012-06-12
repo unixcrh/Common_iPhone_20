@@ -11,8 +11,9 @@
 #import "GroupDataAZ.h"
 #import "ArrayOfCharacters.h"
 #import "EGORefreshTableHeaderView.h"
+#import "EGORefreshTableFooterView.h"
 
-@interface PPTableViewController : PPViewController <UITableViewDelegate, UITableViewDataSource> {
+@interface PPTableViewController : PPViewController <EGORefreshTableHeaderDelegate, EGORefreshTableFooterDelegate, UITableViewDelegate, UITableViewDataSource> {
 
 	NSArray				 *dataList;
 	IBOutlet UITableView *dataTableView;
@@ -47,12 +48,6 @@
 	// the following two attributes are useless
 	BOOL			enableCustomIndexView;
 //	CustomIndexView	*customIndexView;
-    
-    // for pull refresh
-    EGORefreshTableHeaderView *refreshHeaderView;
-	BOOL _reloading;
-    BOOL supportRefreshHeader;
-    BOOL needRefreshNow;
     
     // for more row
     int  moreRowSection;
@@ -95,7 +90,6 @@
 @property (nonatomic, retain) NSIndexPath          *tappedIndexPath;
 @property (nonatomic, retain) NSIndexPath          *controlRowIndexPath;
 @property (nonatomic, assign) CGRect            tableViewFrame;
-@property (nonatomic, assign,getter = isRefreshHeaderViewEnable) BOOL              refreshHeaderViewEnable;
 
 @property (nonatomic, retain) NSTimer           *reloadVisibleCellTimer;
 @property (nonatomic, assign) BOOL              enableReloadVisableCellTimer;
@@ -128,13 +122,25 @@
 
 - (void)loadCellFromNib:(NSString*)nibFileNameWithoutSuffix;
 
-// for pull refresh
-@property(assign,getter=isReloading) BOOL reloading;
-@property(nonatomic,retain) EGORefreshTableHeaderView *refreshHeaderView;
+#pragma mark: For pull down to refresh
+// For pull down to refresh
 @property(nonatomic,assign) BOOL supportRefreshHeader;
+@property(nonatomic,retain) EGORefreshTableHeaderView *refreshHeaderView;
+// When "pull down to refresh" in triggered, this function will be called  
 - (void)reloadTableViewDataSource;
+// After finished loading data source, call this method to hide refresh view.
 - (void)dataSourceDidFinishLoadingNewData;
-- (void)clearRefreshFlag;
+
+#pragma mark: For pull up to load more
+// For pull up to load more
+@property (nonatomic, assign) BOOL noMoreData;
+@property (nonatomic, assign) BOOL supportRefreshFooter;
+@property (nonatomic, retain) EGORefreshTableFooterView *refreshFooterView;
+// When "pull up to load more" in triggered, this function will be called  
+- (void)loadMoreTableViewDataSource;
+// After finished loading data source, call this method to hide refresh view.
+- (void)dataSourceDidFinishLoadingMoreData;
+
 
 - (int)dataListCountWithMore;   // to be removed
 - (BOOL)isMoreRow:(int)row;     // to be removed
@@ -158,6 +164,7 @@
 - (void)deleteControlRow;
 
 - (void)setRefreshHeaderViewFrame:(CGRect)frame;
+- (void)setRefreshFooterViewFrame:(CGRect)frame;
 
 // for reload visiable cell timer, just choose one of method below, the first one use 1 second as default
 - (void)scheduleReloadVisiableCellTimer;
