@@ -27,6 +27,7 @@ enum {
 
 + (uint) detectDevice;
 + (int) detectModel;
++ (NSString *)platform;
 
 + (NSString *) returnDeviceName:(BOOL)ignoreSimulator;
 + (BOOL) isIPodTouch;
