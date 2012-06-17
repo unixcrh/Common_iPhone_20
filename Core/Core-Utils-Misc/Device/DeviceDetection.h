@@ -35,4 +35,6 @@ enum {
 + (BOOL) canSendSms;
 + (BOOL) isIPAD;
 
++ (NSString *)platform;
+
 @end
