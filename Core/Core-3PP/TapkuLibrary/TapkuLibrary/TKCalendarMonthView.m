@@ -33,16 +33,18 @@
 #import "NSDate+TKCategory.h"
 #import "TKGlobal.h"
 #import "UIImage+TKCategory.h"
+#import "TimeUtils.h"
+//#import "UIImageUtil.h"
 
 //#define kCalendImagesPath @"TapkuLibrary.bundle/Images/calendar/"
-#pragma mark -
-@interface NSDate (calendarcategory)
-
-- (NSDate*) firstOfMonth;
-- (NSDate*) nextMonth;
-- (NSDate*) previousMonth;
-
-@end
+//#pragma mark -
+//@interface NSDate (calendarcategory)
+//
+//- (NSDate*) firstOfMonth;
+//- (NSDate*) nextMonth;
+//- (NSDate*) previousMonth;
+//
+//@end
 
 
 #pragma mark -
@@ -113,10 +115,15 @@
 	UIImageView *selectedImageView;
 	BOOL startOnSunday;
 	NSDate *monthDate;
+    
+    NSArray *markTexts;
+    CGFloat latticeHeight;
 }
 @property (readonly) NSDate *monthDate;
 
-- (id) initWithMonth:(NSDate*)date marks:(NSArray*)marks startDayOnSunday:(BOOL)sunday;
+- (id) initWithMonth:(NSDate*)date latticeHeight:(CGFloat)height marks:(NSArray*)markArray startDayOnSunday:(BOOL)sunday markTexts:(NSArray *)markTextList;
+
+
 - (void) setTarget:(id)target action:(SEL)action;
 
 - (void) selectDay:(int)day;
@@ -128,7 +135,7 @@
 
 #pragma mark -
 
-#define dotFontSize 18.0
+#define dotFontSize 12.0
 #define dateFontSize 22.0
 
 @interface TKCalendarMonthTiles (private)
@@ -136,13 +143,21 @@
 @property (readonly) UIImageView *selectedImageView;
 @property (readonly) UILabel *currentDay;
 @property (readonly) UILabel *dot;
+
 @end
 
 #pragma mark -
 
+//#define HEIGHT_LATTI 44
+#define HEIGHT_LATTICE 68
+#define WIDTH_LATTICE 46
+
+#define HEIGHT_CURRENT_DAY 20
+
+#define TOP_EDGE_CURRENT_DAY 11
+
 @implementation TKCalendarMonthTiles
 @synthesize monthDate;
-
 
 + (NSArray*) rangeOfDatesInMonthGrid:(NSDate*)date startOnSunday:(BOOL)sunday{
 	
@@ -221,20 +236,25 @@
 		lastDate = lastInMonth;
 	}
 	
-	
-	
 	return [NSArray arrayWithObjects:firstDate,lastDate,nil];
 }
 
-- (id) initWithMonth:(NSDate*)date marks:(NSArray*)markArray startDayOnSunday:(BOOL)sunday{
+- (id) initWithMonth:(NSDate*)date 
+        latticeHeight:(CGFloat)height
+               marks:(NSArray*)markArray
+    startDayOnSunday:(BOOL)sunday 
+           markTexts:(NSArray *)markTextList
+{
 	if(![super initWithFrame:CGRectZero]) return nil;
 
 	firstOfPrev = -1;
 	marks = [markArray retain];
+    markTexts = [markTextList retain];
+    latticeHeight = height;
+    
 	monthDate = [date retain];
+    
 	startOnSunday = sunday;
-	
-
 	
 	TKDateInformation dateInfo = [monthDate dateInformationWithTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 	firstWeekday = dateInfo.weekday;
@@ -251,7 +271,8 @@
 	
 
 	row = (row / 7) + ((row % 7 == 0) ? 0:1);
-	float h = 44 * row;
+//	float h = 44 * row;
+	float h = latticeHeight * row;
 	
 	TKDateInformation todayInfo = [[NSDate date] dateInformation];
 	today = dateInfo.month == todayInfo.month && dateInfo.year == todayInfo.year ? todayInfo.day : -5;
@@ -271,15 +292,12 @@
 
 	}
 	
-	
-
-	
 	self.frame = CGRectMake(0, 1, 320, h+1);
 	
 	[self.selectedImageView addSubview:self.currentDay];
 	[self.selectedImageView addSubview:self.dot];
 	self.multipleTouchEnabled = NO;
-	
+    	
 	return self;
 }
 - (void) dealloc {
@@ -287,6 +305,7 @@
 	[dot release];
 	[selectedImageView release];
 	[marks release];
+    [markTexts release];
 	[monthDate release];
     [super dealloc];
 }
@@ -302,14 +321,15 @@
 	int row = index / 7;
 	int col = index % 7;
 	
-	return CGRectMake(col*46, row*44+6, 47, 45);
+//	return CGRectMake(col*46, row*44+6, 47, 45);
+    return CGRectMake(col*WIDTH_LATTICE, row*latticeHeight+6, WIDTH_LATTICE + 1, latticeHeight + 1);
 }
-- (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark font:(UIFont*)f1 font2:(UIFont*)f2{
+- (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark markText:(NSString *)text font:(UIFont*)f1 font2:(UIFont*)f2{
 	
 	NSString *str = [NSString stringWithFormat:@"%d",day];
 	
-	
 	r.size.height -= 2;
+
 	[str drawInRect: r
 		   withFont: f1
 	  lineBreakMode: UILineBreakModeWordWrap 
@@ -317,21 +337,27 @@
 	
 	if(mark){
 		r.size.height = 10;
-		r.origin.y += 18;
-		
-		[@"•" drawInRect: r
-				withFont: f2
-		   lineBreakMode: UILineBreakModeWordWrap 
-			   alignment: UITextAlignmentCenter];
+        r.origin.y += 29;
+
+		NSArray *tA = [text componentsSeparatedByString:@"\n"];
+        
+        for (NSString *t in tA) {
+            [t drawInRect: r
+                 withFont: f2
+            lineBreakMode: UILineBreakModeWordWrap 
+                alignment: UITextAlignmentCenter];
+            r.origin.y += 15;
+        }
 	}
-	
-	
 }
+
 - (void) drawRect:(CGRect)rect {
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	UIImage *tile = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile.png")];
-	CGRect r = CGRectMake(0, 0, 46, 44);
+//	CGRect r = CGRectMake(0, 0, 46, 44);
+    CGRect r = CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight);
+
 	CGContextDrawTiledImage(context, r, tile.CGImage);
 	
 	if(today > 0){
@@ -353,9 +379,9 @@
 		for(int i = firstOfPrev;i<= lastOfPrev;i++){
 			r = [self rectForCellAtIndex:index];
 			if ([marks count] > 0)
-				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] font:font font2:font2];
+				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
 			else
-				[self drawTileInRect:r day:i mark:NO font:font font2:font2];
+				[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2];
 			index++;
 		}
 	}
@@ -369,9 +395,9 @@
 		if(today == i) [[UIColor whiteColor] set];
 		
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] font:font font2:font2];
+			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
 		else
-			[self drawTileInRect:r day:i mark:NO font:font font2:font2];
+			[self drawTileInRect:r day:i mark:NO markText:[markTexts objectAtIndex:index] font:font font2:font2];
 		if(today == i) [color set];
 		index++;
 	}
@@ -381,9 +407,9 @@
 	while(index % 7 != 0){
 		r = [self rectForCellAtIndex:index] ;
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] font:font font2:font2];
+			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
 		else
-			[self drawTileInRect:r day:i mark:NO font:font font2:font2];
+			[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2];
 		i++;
 		index++;
 	}
@@ -419,12 +445,14 @@
 	
 	
 	[self addSubview:self.selectedImageView];
+
 	self.currentDay.text = [NSString stringWithFormat:@"%d",day];
 	
 	if ([marks count] > 0) {
 		
 		if([[marks objectAtIndex: row * 7 + column ] boolValue]){
 			[self.selectedImageView addSubview:self.dot];
+            self.dot.text = [markTexts objectAtIndex: row * 7 + column];
 		}else{
 			[self.dot removeFromSuperview];
 		}
@@ -440,14 +468,15 @@
 	}
 	
 	CGRect r = self.selectedImageView.frame;
-	r.origin.x = (column*46);
-	r.origin.y = (row*44)-1;
+//	r.origin.x = (column*46);
+	r.origin.x = (column*WIDTH_LATTICE);
+
+//	r.origin.y = (row*44)-1;
+    r.origin.y = (row*latticeHeight)-1;
+
 	self.selectedImageView.frame = r;
-	
-	
-	
-	
 }
+
 - (NSDate*) dateSelected{
 	if(selectedDay < 1 || selectedPortion != 1) return nil;
 	
@@ -458,10 +487,7 @@
 	info.day = selectedDay;
 	NSDate *d = [NSDate dateFromDateInformation:info timeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 	
-		
-	
-	return d;
-	
+	return d;	
 }
 
 
@@ -471,10 +497,14 @@
 	CGPoint p = [touch locationInView:self];
 	if(p.y > self.bounds.size.height || p.y < 0) return;
 	
-	int column = p.x / 46, row = p.y / 44;
+//	int column = p.x / 46, row = p.y / 44;
+    int column = p.x / WIDTH_LATTICE, row = p.y / latticeHeight;
+
 	int day = 1, portion = 0;
 	
-	if(row == (int) (self.bounds.size.height / 44)) row --;
+//	if(row == (int) (self.bounds.size.height / 44)) row --;
+    if(row == (int) (self.bounds.size.height / latticeHeight)) row --;
+
 	
 	int fir = firstWeekday - 1;
 	if(!startOnSunday && fir == 0) fir = 7;
@@ -512,11 +542,14 @@
 	}
 	
 	[self addSubview:self.selectedImageView];
+
 	self.currentDay.text = [NSString stringWithFormat:@"%d",day];
 	
 	if ([marks count] > 0) {
-		if([[marks objectAtIndex: row * 7 + column] boolValue])
-			[self.selectedImageView addSubview:self.dot];
+		if([[marks objectAtIndex: row * 7 + column] boolValue]){
+            [self.selectedImageView addSubview:self.dot];
+            self.dot.text = [markTexts objectAtIndex: row * 7 + column];
+        }
 		else
 			[self.dot removeFromSuperview];
 	}else{
@@ -527,8 +560,11 @@
 	
 	
 	CGRect r = self.selectedImageView.frame;
-	r.origin.x = (column*46);
-	r.origin.y = (row*44)-1;
+//	r.origin.x = (column*46);
+    r.origin.x = (column*WIDTH_LATTICE);
+//	r.origin.y = (row*44)-1;
+    r.origin.y = (row*latticeHeight)-1;
+
 	self.selectedImageView.frame = r;
 	
 	if(day == selectedDay && selectedPortion == portion) return;
@@ -561,11 +597,15 @@
 
 - (UILabel *) currentDay{
 	if(currentDay==nil){
-		CGRect r = self.selectedImageView.bounds;
-		r.origin.y -= 2;
+//		CGRect r = self.selectedImageView.bounds;
+//		r.origin.y -= 2;
+        
+        CGRect r = CGRectMake(0, 0, WIDTH_LATTICE, HEIGHT_CURRENT_DAY);
+		r.origin.y += TOP_EDGE_CURRENT_DAY;
+    
 		currentDay = [[UILabel alloc] initWithFrame:r];
 		currentDay.text = @"1";
-    currentDay.textColor = [UIColor whiteColor];
+        currentDay.textColor = [UIColor whiteColor];
     /* NOTE By Tonny
      * -------------
      * Aug 18, 2011
@@ -583,26 +623,35 @@
 	}
 	return currentDay;
 }
+
 - (UILabel *) dot{
-	if(dot==nil){
+	if(dot==nil ){
 		CGRect r = self.selectedImageView.bounds;
-		r.origin.y += 29;
-		r.size.height -= 31;
+//		r.origin.y += 35;
+//		r.size.height -= 31;
+        r.origin.y += 27;
+        r.size.height -= HEIGHT_CURRENT_DAY;
+
 		dot = [[UILabel alloc] initWithFrame:r];
 		
 		dot.text = @"•";
+        NSLog(@"call dot, %@", dot.text);
 		dot.textColor = [UIColor whiteColor];
 		dot.backgroundColor = [UIColor clearColor];
 		dot.font = [UIFont boldSystemFontOfSize:dotFontSize];
 		dot.textAlignment = UITextAlignmentCenter;
 		dot.shadowColor = [UIColor darkGrayColor];
 		dot.shadowOffset = CGSizeMake(0, -1);
+        dot.numberOfLines = 3;
 	}
 	return dot;
 }
+
 - (UIImageView *) selectedImageView{
 	if(selectedImageView==nil){
-		selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"]];
+//		selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"]];
+        selectedImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight)];
+        selectedImageView.image = [UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"];
 	}
 	return selectedImageView;
 }
@@ -631,47 +680,84 @@
 	self = [self initWithSundayAsFirst:YES];
 	return self;
 }
-- (id) initWithSundayAsFirst:(BOOL)s{
+- (id) initWithSundayAsFirst:(BOOL)s{    
+    [self initWithSundayAsFirst:s 
+                           date:[NSDate date] 
+           hasMonthYearAndArrow:YES
+               hasTopBackground:YES
+                      hasShadow:YES 
+          userInteractionEnable:YES];
+    
+	return self;
+}
+
+- (id) initWithSundayAsFirst:(BOOL)s
+                        date:(NSDate *)date
+        hasMonthYearAndArrow:(BOOL)hasMonthYearAndArr
+            hasTopBackground:(BOOL)hasTopBackground
+                   hasShadow:(BOOL)hasShadow
+       userInteractionEnable:(BOOL)enable
+{
 	if (!(self = [super initWithFrame:CGRectZero])) return nil;
-	self.backgroundColor = [UIColor grayColor];
-
+//	self.backgroundColor = [UIColor grayColor];
+    self.backgroundColor = [UIColor clearColor];
+    
 	sunday = s;
+    hasMonthYearAndArrow = hasMonthYearAndArr;
+    userInteractionEnable = enable;
+    latticeHeight = HEIGHT_LATTICE;
 	
-	
-	
-	currentTile = [[[TKCalendarMonthTiles alloc] initWithMonth:[[NSDate date] firstOfMonth] marks:nil startDayOnSunday:sunday] autorelease];
-	[currentTile setTarget:self action:@selector(tile:)];
-	
-	[currentTile setTarget:self action:@selector(tile:)];
-	CGRect r = CGRectMake(0, 0, self.tileBox.bounds.size.width, self.tileBox.bounds.size.height + self.tileBox.frame.origin.y);
+	currentTile = [[[TKCalendarMonthTiles alloc] initWithMonth:[date firstOfMonth] 
+                                                 latticeHeight:latticeHeight
+                                                         marks:nil 
+                                              startDayOnSunday:sunday
+                                                     markTexts:nil] autorelease];
+    
+    if (userInteractionEnable) {
+        [currentTile setTarget:self action:@selector(tile:)];
+        
+        [currentTile setTarget:self action:@selector(tile:)];
+    }
 
-	
+	CGRect r = CGRectMake(0, 0, self.tileBox.bounds.size.width, self.tileBox.bounds.size.height + self.tileBox.frame.origin.y);
+    
 	self.frame = r;
-	
 	
 	[currentTile retain];
 	
-	[self addSubview:self.topBackground];
+    if (hasTopBackground) {
+        [self addSubview:self.topBackground];
+    }
+    
 	[self.tileBox addSubview:currentTile];
 	[self addSubview:self.tileBox];
+    
+    
 	
-	NSDate *date = [NSDate date];
-	self.monthYear.text = [NSString stringWithFormat:@"%@ %@",[date monthString],[date yearString]];
-	[self addSubview:self.monthYear];
+	if (hasMonthYearAndArrow) {
+        self.monthYear.text = [NSString stringWithFormat:@"%@ %@",[date monthString],[date yearString]];
+        [self addSubview:self.monthYear];
+        [self addSubview:self.leftArrow];
+        [self addSubview:self.rightArrow];
+    }
+
+    if (hasShadow) {
+        [self addSubview:self.shadow];
+        self.shadow.frame = CGRectMake(0, self.frame.size.height-self.shadow.frame.size.height+21, self.shadow.frame.size.width, self.shadow.frame.size.height);
+    }
 	
+    [self addWeeks];
 	
-	[self addSubview:self.leftArrow];
-	[self addSubview:self.rightArrow];
-	[self addSubview:self.shadow];
-	self.shadow.frame = CGRectMake(0, self.frame.size.height-self.shadow.frame.size.height+21, self.shadow.frame.size.width, self.shadow.frame.size.height);
-	
-	
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+	return self;
+}
+
+- (void)addWeeks
+{
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"eee"];
 	[dateFormat setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 	
-	
-	TKDateInformation sund;
+    TKDateInformation sund;
 	sund.day = 5;
 	sund.month = 12;
 	sund.year = 2010;
@@ -682,30 +768,35 @@
 	
 	
 	NSTimeZone *tz = [NSTimeZone timeZoneForSecondsFromGMT:0];
-	NSString * sun = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
-	
+    //	NSString * sun = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    NSString *sun = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
+    
 	sund.day = 6;
-	NSString *mon = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
-	
+    //	NSString *mon = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    NSString *mon = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
+    
 	sund.day = 7;
-	NSString *tue = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
-	
+    //	NSString *tue = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    NSString *tue = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
+    
 	sund.day = 8;
-	NSString *wed = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
-	
+    //	NSString *wed = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    NSString *wed = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
+    
 	sund.day = 9;
-	NSString *thu = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
-	
+    //	NSString *thu = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    NSString *thu = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
+    
 	sund.day = 10;
-	NSString *fri = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    //	NSString *fri = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+	NSString *fri = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
 	
 	sund.day = 11;
-	NSString *sat = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+    //	NSString *sat = [dateFormat stringFromDate:[NSDate dateFromDateInformation:sund timeZone:tz]];
+	NSString *sat = chineseWeekDay2FromDate([NSDate dateFromDateInformation:sund timeZone:tz]);
 	
 	[dateFormat release];
-
-
-	
+    
 	NSArray *ar;
 	if(sunday) ar = [NSArray arrayWithObjects:sun,mon,tue,wed,thu,fri,sat,nil];
 	else ar = [NSArray arrayWithObjects:mon,tue,wed,thu,fri,sat,sun,nil];
@@ -713,7 +804,9 @@
 	int i = 0;
 	for(NSString *s in ar){
 		
-		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(46 * i, 29, 46, 15)];
+        //		UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(46 * i, 29, 46, 15)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(WIDTH_LATTICE * i, 29, WIDTH_LATTICE, 15)];
+        
 		[self addSubview:label];
 		label.text = s;
 		label.textAlignment = UITextAlignmentCenter;
@@ -722,13 +815,12 @@
 		label.font = [UIFont systemFontOfSize:11];
 		label.backgroundColor = [UIColor clearColor];
 		label.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
-
+        
 		i++;
 		[label release];
 	}
-	
-	return self;
 }
+
 - (void) dealloc {
 	[shadow release];
 	[topBackground release];
@@ -762,17 +854,27 @@
 	
 	NSArray *dates = [TKCalendarMonthTiles rangeOfDatesInMonthGrid:nextMonth startOnSunday:sunday];
 	NSArray *ar = [dataSource calendarMonthView:self marksFromDate:[dates objectAtIndex:0] toDate:[dates lastObject]];
-	TKCalendarMonthTiles *newTile = [[TKCalendarMonthTiles alloc] initWithMonth:nextMonth marks:ar startDayOnSunday:sunday];
-	[newTile setTarget:self action:@selector(tile:)];
-	
-	
+    NSArray *markTexts = [dataSource calendarMonthView:self markTextsFromDate:[dates objectAtIndex:0] toDate:[dates lastObject]];
+    
+	TKCalendarMonthTiles *newTile = [[TKCalendarMonthTiles alloc] initWithMonth:nextMonth
+                                                                  latticeHeight:latticeHeight
+                                                                          marks:ar
+                                                               startDayOnSunday:sunday 
+                                                                      markTexts:markTexts];
+    
+    if (userInteractionEnable) {
+        [newTile setTarget:self action:@selector(tile:)];
+    }
 	
 	int overlap =  0;
 	
 	if(isNext){
-		overlap = [newTile.monthDate isEqualToDate:[dates objectAtIndex:0]] ? 0 : 44;
+//		overlap = [newTile.monthDate isEqualToDate:[dates objectAtIndex:0]] ? 0 : 44;
+        overlap = [newTile.monthDate isEqualToDate:[dates objectAtIndex:0]] ? 0 : latticeHeight;
+
 	}else{
-		overlap = [currentTile.monthDate compare:[dates lastObject]] !=  NSOrderedDescending ? 44 : 0;
+//		overlap = [currentTile.monthDate compare:[dates lastObject]] !=  NSOrderedDescending ? 44 : 0;
+        overlap = [currentTile.monthDate compare:[dates lastObject]] !=  NSOrderedDescending ? latticeHeight : 0;
 	}
 	
 	float y = isNext ? currentTile.bounds.size.height - overlap : newTile.bounds.size.height * -1 + overlap +2;
@@ -870,6 +972,8 @@
 	//TKDateInformation info = [date dateInformation];
 	TKDateInformation info = [date dateInformationWithTimeZone:[NSTimeZone timeZoneWithName:@"GMT"]];
 	NSDate *month = [date firstOfMonth];
+//    NSDate *month = [date nextMonth];
+
 	
 	if([month isEqualToDate:[currentTile monthDate]]){
 		[currentTile selectDay:info.day];
@@ -885,15 +989,23 @@
 		
 		NSArray *dates = [TKCalendarMonthTiles rangeOfDatesInMonthGrid:month startOnSunday:sunday];
 		NSArray *data = [dataSource calendarMonthView:self marksFromDate:[dates objectAtIndex:0] toDate:[dates lastObject]];
+        NSArray *markTexts = [dataSource calendarMonthView:self markTextsFromDate:[dates objectAtIndex:0] toDate:[dates lastObject]];
+
 		TKCalendarMonthTiles *newTile = [[TKCalendarMonthTiles alloc] initWithMonth:month 
+                                                                      latticeHeight:latticeHeight
 																			  marks:data 
-																   startDayOnSunday:sunday];
-		[newTile setTarget:self action:@selector(tile:)];
+																   startDayOnSunday:sunday
+                                                                          markTexts:markTexts];
+        if (userInteractionEnable) {
+            [newTile setTarget:self action:@selector(tile:)];
+        }
 		[currentTile removeFromSuperview];
 		[currentTile release];
 		currentTile = newTile;
 		[self.tileBox addSubview:currentTile];
-		self.tileBox.frame = CGRectMake(0, 44, newTile.frame.size.width, newTile.frame.size.height);
+//		self.tileBox.frame = CGRectMake(0, 44, newTile.frame.size.width, newTile.frame.size.height);
+        self.tileBox.frame = CGRectMake(0, 44, newTile.frame.size.width, newTile.frame.size.height);
+
 		self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.bounds.size.width, self.tileBox.frame.size.height+self.tileBox.frame.origin.y);
 
 		self.shadow.frame = CGRectMake(0, self.frame.size.height-self.shadow.frame.size.height+21, self.shadow.frame.size.width, self.shadow.frame.size.height);
@@ -902,16 +1014,22 @@
 		
 		if([self.delegate respondsToSelector:@selector(calendarMonthView:monthDidChange:animated:)])
 			[self.delegate calendarMonthView:self monthDidChange:date animated:NO];
-		
-		
 	}
 }
+
 - (void) reload{
 	NSArray *dates = [TKCalendarMonthTiles rangeOfDatesInMonthGrid:[currentTile monthDate] startOnSunday:sunday];
 	NSArray *ar = [dataSource calendarMonthView:self marksFromDate:[dates objectAtIndex:0] toDate:[dates lastObject]];
-	
-	TKCalendarMonthTiles *refresh = [[[TKCalendarMonthTiles alloc] initWithMonth:[currentTile monthDate] marks:ar startDayOnSunday:sunday] autorelease];
-	[refresh setTarget:self action:@selector(tile:)];
+    NSArray *markTexts = [dataSource calendarMonthView:self markTextsFromDate:[dates objectAtIndex:0] toDate:[dates lastObject]];
+
+	TKCalendarMonthTiles *refresh = [[[TKCalendarMonthTiles alloc] initWithMonth:[currentTile monthDate] 
+                                                                   latticeHeight:latticeHeight
+                                                                           marks:ar 
+                                                                startDayOnSunday:sunday 
+                                                                       markTexts:markTexts] autorelease];
+    if (userInteractionEnable) {
+        [refresh setTarget:self action:@selector(tile:)];
+    }
 	
 	[self.tileBox addSubview:refresh];
 	[currentTile removeFromSuperview];
@@ -968,7 +1086,11 @@
 #pragma mark Properties
 - (UIImageView *) topBackground{
 	if(topBackground==nil){
-		topBackground = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")]];
+//		topBackground = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")]];
+        
+        CGFloat height = hasMonthYearAndArrow ? 44 : 18;
+        topBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0, 44 - height, self.bounds.size.width, height)];
+        topBackground.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")];
 	}
 	return topBackground;
 }
@@ -1014,7 +1136,9 @@
 }
 - (UIScrollView *) tileBox{
 	if(tileBox==nil){
-		tileBox = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 44, 320, currentTile.frame.size.height)];
+//		tileBox = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 44, 320, currentTile.frame.size.height)];
+        tileBox = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 44, 320, currentTile.frame.size.height)];
+
 	}
 	return tileBox;
 }
