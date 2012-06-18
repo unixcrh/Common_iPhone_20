@@ -542,38 +542,66 @@
 }
 
 #pragma mark Keyboard Methods
-
 // sub class can implement this method
+- (void)keyboardWillShowWithRect:(CGRect)keyboardRect
+{
+}
+
 - (void)keyboardDidShowWithRect:(CGRect)keyboardRect
 {
 }
 
-- (void)keyboardDidShow:(NSNotification *)notification
+- (void)keyboardWillHideWithRect:(CGRect)keyboardRect
 {
-	// adjust current view frame
-	
-	// get keyboard frame
-	NSDictionary* info = [notification userInfo];
+}
+
+- (void)keyboardDidHideWithRect:(CGRect)keyboardRect
+{
+}
+
+- (CGRect)getRectByNotification:(NSNotification *)notification
+{
+    NSDictionary* info = [notification userInfo];
 	NSValue *value = [info objectForKey:UIKeyboardFrameEndUserInfoKey];	
     CGRect keyboardRect;
     [value getValue:&keyboardRect];
+    return keyboardRect;
+}
 
-	[self keyboardDidShowWithRect:keyboardRect];
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+	[self keyboardWillShowWithRect:[self getRectByNotification:notification]];
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+	[self keyboardDidShowWithRect:[self getRectByNotification:notification]];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+	[self keyboardWillHideWithRect:[self getRectByNotification:notification]];
 }
 
 - (void)keyboardDidHide:(NSNotification *)notification
 {
+    [self keyboardDidHideWithRect:[self getRectByNotification:notification]];
 }
+
 
 - (void)registerKeyboardNotification
 {
 	// create notification
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
 }
 
 - (void)deregsiterKeyboardNotification
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];	
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];	
 }

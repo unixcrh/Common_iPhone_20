@@ -27,6 +27,7 @@ enum {
 
 + (uint) detectDevice;
 + (int) detectModel;
++ (NSString *)platform;
 
 + (NSString *) returnDeviceName:(BOOL)ignoreSimulator;
 + (BOOL) isIPodTouch;
@@ -34,5 +35,7 @@ enum {
 + (BOOL) isOS5;
 + (BOOL) canSendSms;
 + (BOOL) isIPAD;
+
++ (NSString *)platform;
 
 @end

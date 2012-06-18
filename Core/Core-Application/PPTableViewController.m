@@ -206,6 +206,8 @@
     [super viewDidUnload];
     self.refreshHeaderView = nil;
     self.refreshFooterView = nil;
+    self.dataList = nil;
+    self.dataTableView = nil;
 }
 
 - (void)viewDidAppear:(BOOL)animated
