@@ -36,6 +36,15 @@
 @class TKCalendarMonthTiles;
 @protocol TKCalendarMonthViewDelegate, TKCalendarMonthViewDataSource;
 
+#pragma mark -
+@interface NSDate (calendarcategory)
+
+- (NSDate*) firstOfMonth;
+- (NSDate*) nextMonth;
+- (NSDate*) previousMonth;
+
+@end
+
 
 @interface TKCalendarMonthView : UIView {
 
@@ -45,12 +54,24 @@
 	UILabel *monthYear;
 	UIScrollView *tileBox;
 	BOOL sunday;
+    BOOL hasMonthYearAndArrow;
+    BOOL userInteractionEnable;
+    CGFloat latticeHeight;
 
 	id <TKCalendarMonthViewDelegate> delegate;
 	id <TKCalendarMonthViewDataSource> dataSource;
 
 }
+
 - (id) initWithSundayAsFirst:(BOOL)sunday; // or Monday
+
+
+- (id) initWithSundayAsFirst:(BOOL)s
+                        date:(NSDate *)date
+        hasMonthYearAndArrow:(BOOL)hasMonthYearAndArr
+            hasTopBackground:(BOOL)hasTopBackground
+                   hasShadow:(BOOL)hasShadow
+       userInteractionEnable:(BOOL)enable;
 
 @property (nonatomic,assign) id <TKCalendarMonthViewDelegate> delegate;
 @property (nonatomic,assign) id <TKCalendarMonthViewDataSource> dataSource;
@@ -73,4 +94,6 @@
 
 @protocol TKCalendarMonthViewDataSource <NSObject>
 - (NSArray*) calendarMonthView:(TKCalendarMonthView*)monthView marksFromDate:(NSDate*)startDate toDate:(NSDate*)lastDate;
+- (NSArray*) calendarMonthView:(TKCalendarMonthView*)monthView markTextsFromDate:(NSDate*)startDate toDate:(NSDate*)lastDate;
+
 @end

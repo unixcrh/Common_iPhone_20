@@ -51,3 +51,6 @@ NSDate *dateFromChineseStringByFormat(NSString *string, NSString *format);
 NSString *chineseWeekDayFromDate(NSDate *date);
 
 NSString* chineseBeforeTime(NSDate* date);
+
+NSString *chineseWeekDay2FromDate(NSDate *date);
+

@@ -8,6 +8,7 @@
 
 #import "TimeUtils.h"
 NSArray *weekDays = nil; 
+NSArray *weekDays2 = nil;
 
 static NSArray *getWeekDayArray()
 {
@@ -19,7 +20,15 @@ static NSArray *getWeekDayArray()
     return weekDays;
 }
 
-
+static NSArray *getWeekDay2Array()
+{
+    if(weekDays == nil)
+    {
+        weekDays = [[NSArray alloc]initWithObjects: @"周日", @"周一", @"周二",
+                    @"周三",@"周四",@"周五",@"周六", nil];
+    }
+    return weekDays;
+}
 
 NSDateFormatter *dateFormatter = nil;
 static NSDateFormatter *getDateFormatter()
@@ -294,13 +303,14 @@ static NSDate *nextNDate(NSDate *date, NSInteger interval)
 NSString *chineseWeekDayFromDate(NSDate *date)
 {
     NSDateComponents *dc = getChineseDateComponents(date);
-    [dc setTimeZone:[NSTimeZone timeZoneWithName:TIME_ZONE_GMT]];
+    [dc setTimeZone:[NSTimeZone timeZoneWithName:TIME_ZONE_GMT]];    
     NSInteger weekIndex = [dc weekday];
     if(weekIndex > [getWeekDayArray() count]){
         return @"";
     }
     return [getWeekDayArray() objectAtIndex:weekIndex-1];
 }
+
 
 NSString* chineseBeforeTime(NSDate* date)
 {
@@ -319,6 +329,18 @@ NSString* chineseBeforeTime(NSDate* date)
         }
     }
     return nil;
+}
+
+NSString *chineseWeekDay2FromDate(NSDate *date)
+{
+    NSDateComponents *dc = getChineseDateComponents(date);
+    [dc setTimeZone:[NSTimeZone timeZoneWithName:TIME_ZONE_GMT]];
+    NSInteger weekIndex = [dc weekday];
+    if(weekIndex > [getWeekDay2Array() count]){
+        return @"";
+    }
+    return [getWeekDay2Array() objectAtIndex:weekIndex-1];
+
 }
 /*
  // The date in your source timezone (eg. EST)
