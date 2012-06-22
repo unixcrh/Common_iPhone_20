@@ -301,6 +301,25 @@ NSString *chineseWeekDayFromDate(NSDate *date)
     }
     return [getWeekDayArray() objectAtIndex:weekIndex-1];
 }
+
+NSString* chineseBeforeTime(NSDate* date)
+{
+    int interval = [date timeIntervalSinceNow];
+    if (interval < 0) {
+        if (interval > -60) {
+            return [NSString stringWithFormat:@"%d秒前",interval];
+        } else if (interval >-3600) {
+            return [NSString stringWithFormat:@"%d分钟前",interval/(-60)];
+        } else if (interval > -3600*24) {
+            return [NSString stringWithFormat:@"%d小时前",interval/(-60*60)];
+        } else if (interval > -3600*24*28) {
+            return [NSString stringWithFormat:@"%d天前",interval/(-60*60*24)];
+        } else {
+            return nil;
+        }
+    }
+    return nil;
+}
 /*
  // The date in your source timezone (eg. EST)
  NSDate* sourceDate = [NSDate date];
