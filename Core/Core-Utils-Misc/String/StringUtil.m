@@ -183,6 +183,16 @@ BOOL NSStringIsValidChinese(NSString *checkString)
 	return [self stringByAppendingFormat:@"&%@=%d", p, value];
 }
 
+- (NSString *)stringByAddQueryParameter:(NSString*)parameter longValue:(int)value
+{
+	NSString* p = parameter;
+	if (p == nil)
+		p = @"";
+	
+	return [self stringByAppendingFormat:@"&%@=%ld", p, value];
+}
+
+
 - (NSString *)stringByAddQueryParameter:(NSString*)parameter doubleValue:(double)value
 {
 	NSString* p = parameter;
