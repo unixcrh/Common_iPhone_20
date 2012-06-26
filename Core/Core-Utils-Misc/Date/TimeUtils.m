@@ -317,7 +317,7 @@ NSString* chineseBeforeTime(NSDate* date)
     int interval = [date timeIntervalSinceNow];
     if (interval < 0) {
         if (interval > -60) {
-            return [NSString stringWithFormat:@"%d秒前",interval];
+            return [NSString stringWithFormat:@"%d秒前",interval/(-1)];
         } else if (interval >-3600) {
             return [NSString stringWithFormat:@"%d分钟前",interval/(-60)];
         } else if (interval > -3600*24) {
@@ -330,6 +330,26 @@ NSString* chineseBeforeTime(NSDate* date)
     }
     return nil;
 }
+
+NSString* englishBeforeTime(NSDate* date)
+{
+    int interval = [date timeIntervalSinceNow];
+    if (interval < 0) {
+        if (interval > -60) {
+            return [NSString stringWithFormat:@"%d seconds ago",interval/(-1)];
+        } else if (interval >-3600) {
+            return [NSString stringWithFormat:@"%d minutes ago",interval/(-60)];
+        } else if (interval > -3600*24) {
+            return [NSString stringWithFormat:@"%d hours ago",interval/(-60*60)];
+        } else if (interval > -3600*24*28) {
+            return [NSString stringWithFormat:@"%d days ago",interval/(-60*60*24)];
+        } else {
+            return nil;
+        }
+    }
+    return nil;
+}
+
 
 NSString *chineseWeekDay2FromDate(NSDate *date)
 {

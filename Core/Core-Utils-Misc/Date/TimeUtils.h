@@ -52,5 +52,7 @@ NSString *chineseWeekDayFromDate(NSDate *date);
 
 NSString* chineseBeforeTime(NSDate* date);
 
+NSString* englishBeforeTime(NSDate* date);
+
 NSString *chineseWeekDay2FromDate(NSDate *date);
 
