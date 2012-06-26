@@ -51,7 +51,7 @@ static AudioManager* globalGetAudioManager()
     if (soundFilePath) {
         NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
         NSError* error = nil;
-        [self.backgroundMusicPlayer initWithContentsOfURL:soundFileURL error:&error];
+        self.backgroundMusicPlayer = [[[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:&error] autorelease];
         if (!error){
             PPDebug(@"<AudioManager>Init audio player successfully, sound file %@", soundFilePath);
             self.backgroundMusicPlayer.numberOfLoops = -1; //infinite
@@ -75,10 +75,10 @@ static AudioManager* globalGetAudioManager()
         return NO;
     }
     NSError* error = nil;
-    if (_backgroundMusicPlayer == nil) {
-        _backgroundMusicPlayer = [[AVAudioPlayer alloc] init];
-    }
-    [self.backgroundMusicPlayer initWithContentsOfURL:url error:&error];
+    AVAudioPlayer* player = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
+    self.backgroundMusicPlayer = player;
+    [player release];
+    
     if (!error){
         PPDebug(@"<AudioManager>Init audio player successfully, sound file %@", url);
         self.backgroundMusicPlayer.numberOfLoops = -1; //infinite
@@ -129,7 +129,6 @@ static AudioManager* globalGetAudioManager()
 {
     self = [super init];
     if (self) {
-        _backgroundMusicPlayer = [[AVAudioPlayer alloc] init];
         _sounds = [[NSMutableArray alloc] init];
         
     }
@@ -138,8 +137,8 @@ static AudioManager* globalGetAudioManager()
 
 - (void)dealloc
 {
-    [_backgroundMusicPlayer release];
-    [_sounds release];
+    PPRelease(_backgroundMusicPlayer);
+    PPRelease(_sounds);
     [super dealloc];
 }
 
