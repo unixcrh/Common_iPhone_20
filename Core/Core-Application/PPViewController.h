@@ -142,4 +142,7 @@
 + (UIScrollView*)createButtonScrollViewByButtonArray:(NSArray*)buttons 
                                       buttonsPerLine:(int)buttonsPerLine 
                                     buttonSeparatorY:(CGFloat)buttonSeparatorY; 
+
+- (UIViewController *)superViewControllerForClass:(Class)controllerClass;
+- (BOOL)hasSuperViewControllerForClass:(Class)controllerClass;
 @end
