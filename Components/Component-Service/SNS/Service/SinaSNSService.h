@@ -38,4 +38,6 @@ enum{
 - (void)publishWeibo:(NSString*)text imageFilePath:(NSString*)imageFilePath delegate:(id<SNSServiceDelegate>)delegate;
 + (SinaSNSService*)defaultService;
 
+- (BOOL)isAuthorizeExpired;
+
 @end

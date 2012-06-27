@@ -272,4 +272,9 @@ static SinaSNSService* _defaultSinaService;
     _action = ACTION_NONE;
 }
 
+- (BOOL)isAuthorizeExpired
+{
+    return [_engine isAuthorizeExpired];
+}
+
 @end
