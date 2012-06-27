@@ -995,12 +995,13 @@
 
 - (UIViewController *)superViewControllerForClass:(Class)controllerClass
 {
+    UIViewController *retViewController = nil;
     for (UIViewController *viewController in self.navigationController.viewControllers) {
         if ([viewController class] == controllerClass) {
-            return viewController;
+            retViewController = viewController;
         }
     }
-    return nil;
+    return retViewController;
 }
 
 - (BOOL)hasSuperViewControllerForClass:(Class)controllerClass
