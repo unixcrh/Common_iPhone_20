@@ -89,8 +89,8 @@ static QQWeiboService* _defaultSinaService;
     dispatch_async(workingQueue, ^{        
         BOOL result = [self loginForAuthorization:snsRequest viewController:viewController];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [viewController hideActivity];
             if (result == NO){
+                [viewController hideActivity];
                 [UIUtils alert:NSLS(@"对不起，用户授权失败")];                
             }
         });        
@@ -128,7 +128,7 @@ static QQWeiboService* _defaultSinaService;
 
             // save oauthen key & secret
             NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-            if ([snsRequest oauthTokenSecret] && [snsRequest oauthToken]){
+            if ([[snsRequest oauthTokenSecret] length] > 0 && [[snsRequest oauthToken] length] > 0){
                 [userDefaults setObject:[snsRequest oauthToken] forKey:QQ_OAUTH_TOKEN];
                 [userDefaults setObject:[snsRequest oauthTokenSecret] forKey:QQ_OAUTH_TOKEN_SECRET];
                 [userDefaults synchronize];
@@ -175,6 +175,21 @@ static QQWeiboService* _defaultSinaService;
     });
 }
 
+- (void)saveToken:(NSString*)token secret:(NSString*)secret
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];    
+    if ([token length] > 0 && [secret length] > 0){
+        [userDefaults setObject:token forKey:QQ_OAUTH_TOKEN];
+        [userDefaults setObject:secret forKey:QQ_OAUTH_TOKEN_SECRET];
+        [userDefaults synchronize];
+    }   
 
+    self.request = [[[QQWeiboRequest alloc] initWithAppKey:self.appkey
+                                                 appSecret:self.appSecret
+                                               callbackURL:@"null"
+                                                oauthToken:[userDefaults objectForKey:QQ_OAUTH_TOKEN]
+                                          oauthTokenSecret:[userDefaults objectForKey:QQ_OAUTH_TOKEN_SECRET]] autorelease];
+    
+}
 
 @end
