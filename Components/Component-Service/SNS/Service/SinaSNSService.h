@@ -39,5 +39,6 @@ enum{
 + (SinaSNSService*)defaultService;
 
 - (BOOL)isAuthorizeExpired;
+- (void)logout;
 
 @end

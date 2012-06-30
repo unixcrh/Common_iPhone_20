@@ -90,6 +90,11 @@ static SinaSNSService* _defaultSinaService;
 //    });        
 }
 
+- (void)logout
+{
+    [_engine logOut];
+}
+
 - (void)startLogin:(PPViewController<SNSServiceDelegate>*)viewController
 {
     _needGetUserInfo = YES;
