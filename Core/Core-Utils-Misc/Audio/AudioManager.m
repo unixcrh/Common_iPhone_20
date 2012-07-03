@@ -31,6 +31,7 @@ static AudioManager* globalGetAudioManager()
 @synthesize isMusicOn = _isMusicOn;
 @synthesize isBGMPrepared = _isBGMPrepared;
 @synthesize volume = _volume;
+@synthesize isVibrateOn = _isVibrateOn;
 
 - (void)setBackGroundMusicWithName:(NSString*)aMusicName
 {
@@ -205,7 +206,9 @@ static AudioManager* globalGetAudioManager()
 
 - (void)vibrate
 {
-    AudioServicesPlaySystemSound (kSystemSoundID_Vibrate);
+    if (_isVibrateOn) {
+        AudioServicesPlaySystemSound (kSystemSoundID_Vibrate);
+    }
 }
 #define SOUND_SWITCHER @"sound_switcher"
 #define MUSIC_SWITCHER @"music_switcher"
