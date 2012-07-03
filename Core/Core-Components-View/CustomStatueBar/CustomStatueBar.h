@@ -19,6 +19,7 @@
 @interface CustomStatueBar : UIWindow
 {
     UIButton *textButton;
+    NSTimer *timer;
 }
 - (void)showStatusMessage:(NSString *)message;
 - (void)hide;

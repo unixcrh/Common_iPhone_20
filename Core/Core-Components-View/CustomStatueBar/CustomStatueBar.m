@@ -18,6 +18,8 @@
         [self addSubview:textButton];
         textButton.clipsToBounds = NO;
         [textButton.titleLabel setFont:[UIFont boldSystemFontOfSize:12]];
+//        [textButton.titleLabel setTextAlignment:UITextAlignmentRight];
+        [textButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentRight];
         [textButton addTarget:self action:@selector(clickTextButton:) forControlEvents:UIControlEventTouchUpInside];
     }
     return self;
@@ -40,8 +42,8 @@
 }
 
 - (void)hide{
+    timer = nil;
     self.alpha = 1.0f;
-    
     [UIView animateWithDuration:0.5f animations:^{
         self.alpha = 0.0f;
     } completion:^(BOOL finished){
@@ -49,6 +51,8 @@
     }];;
 
 }
+
+#define SHOW_TIME 15
 - (void)changeMessge:(NSString *)message{
     [self showStatusMessage:message];
     CGPoint origin = self.bounds.origin;
@@ -58,6 +62,11 @@
     [UIButton setAnimationDuration:1.5];
     textButton.frame = self.bounds;    
     [UIButton commitAnimations];
+    
+    if ([timer isValid]) {
+        [timer invalidate];
+    }
+    timer = [NSTimer scheduledTimerWithTimeInterval:SHOW_TIME target:self selector:@selector(hide) userInfo:nil repeats:NO];
 }
 - (void)dealloc{
     [super dealloc];
