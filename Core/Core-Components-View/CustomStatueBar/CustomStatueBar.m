@@ -43,13 +43,15 @@
 
 - (void)hide{
     timer = nil;
-    self.alpha = 1.0f;
-    [UIView animateWithDuration:0.5f animations:^{
-        self.alpha = 0.0f;
-    } completion:^(BOOL finished){
-        self.hidden = YES;
-    }];;
-
+    
+    if (self.hidden != YES) {
+        self.alpha = 1.0f;
+        [UIView animateWithDuration:0.5f animations:^{
+            self.alpha = 0.0f;
+        } completion:^(BOOL finished){
+            self.hidden = YES;
+        }];;        
+    }
 }
 
 #define SHOW_TIME 15
