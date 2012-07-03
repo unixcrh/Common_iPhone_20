@@ -136,7 +136,7 @@
 #pragma mark -
 
 #define dotFontSize 12.0
-#define dateFontSize 22.0
+#define dateFontSize 20.0
 
 @interface TKCalendarMonthTiles (private)
 
@@ -148,13 +148,13 @@
 
 #pragma mark -
 
-//#define HEIGHT_LATTI 44
-#define HEIGHT_LATTICE 68
+//#define HEIGHT_LATTICE 44
+#define HEIGHT_LATTICE 58
 #define WIDTH_LATTICE 46
 
 #define HEIGHT_CURRENT_DAY 20
 
-#define TOP_EDGE_CURRENT_DAY 11
+#define TOP_EDGE_CURRENT_DAY 6
 
 @implementation TKCalendarMonthTiles
 @synthesize monthDate;
@@ -329,6 +329,7 @@
 	NSString *str = [NSString stringWithFormat:@"%d",day];
 	
 	r.size.height -= 2;
+    r.origin.y -= 4;
 
 	[str drawInRect: r
 		   withFont: f1
@@ -337,7 +338,7 @@
 	
 	if(mark){
 		r.size.height = 10;
-        r.origin.y += 29;
+        r.origin.y += 25;
 
 		NSArray *tA = [text componentsSeparatedByString:@"\n"];
         
@@ -346,7 +347,7 @@
                  withFont: f2
             lineBreakMode: UILineBreakModeWordWrap 
                 alignment: UITextAlignmentCenter];
-            r.origin.y += 15;
+            r.origin.y += 12;
         }
 	}
 }
@@ -569,20 +570,16 @@
 	
 	if(day == selectedDay && selectedPortion == portion) return;
 	
-	
-	
 	if(portion == 1){
 		selectedDay = day;
 		selectedPortion = portion;
 		[target performSelector:action withObject:[NSArray arrayWithObject:[NSNumber numberWithInt:day]]];
-		
 	}
 	else if(down){
 		[target performSelector:action withObject:[NSArray arrayWithObjects:[NSNumber numberWithInt:day],[NSNumber numberWithInt:portion],nil]];
 		selectedDay = day;
 		selectedPortion = portion;
 	}
-	
 }
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
 	//[super touchesBegan:touches withEvent:event];
@@ -592,7 +589,7 @@
 	[self reactToTouch:[touches anyObject] down:NO];
 }
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-	[self reactToTouch:[touches anyObject] down:YES];
+//	[self reactToTouch:[touches anyObject] down:YES];
 }
 
 - (UILabel *) currentDay{
@@ -629,13 +626,13 @@
 		CGRect r = self.selectedImageView.bounds;
 //		r.origin.y += 35;
 //		r.size.height -= 31;
-        r.origin.y += 27;
+        r.origin.y += 23;
         r.size.height -= HEIGHT_CURRENT_DAY;
 
 		dot = [[UILabel alloc] initWithFrame:r];
 		
 		dot.text = @"•";
-        NSLog(@"call dot, %@", dot.text);
+//        NSLog(@"call dot, %@", dot.text);
 		dot.textColor = [UIColor whiteColor];
 		dot.backgroundColor = [UIColor clearColor];
 		dot.font = [UIFont boldSystemFontOfSize:dotFontSize];
@@ -713,11 +710,11 @@
                                               startDayOnSunday:sunday
                                                      markTexts:nil] autorelease];
     
-    if (userInteractionEnable) {
+//    if (userInteractionEnable) {
         [currentTile setTarget:self action:@selector(tile:)];
         
-        [currentTile setTarget:self action:@selector(tile:)];
-    }
+//        [currentTile setTarget:self action:@selector(tile:)];
+//    }
 
 	CGRect r = CGRectMake(0, 0, self.tileBox.bounds.size.width, self.tileBox.bounds.size.height + self.tileBox.frame.origin.y);
     
@@ -862,9 +859,9 @@
                                                                startDayOnSunday:sunday 
                                                                       markTexts:markTexts];
     
-    if (userInteractionEnable) {
+//    if (userInteractionEnable) {
         [newTile setTarget:self action:@selector(tile:)];
-    }
+//    }
 	
 	int overlap =  0;
 	
@@ -996,9 +993,9 @@
 																			  marks:data 
 																   startDayOnSunday:sunday
                                                                           markTexts:markTexts];
-        if (userInteractionEnable) {
+//        if (userInteractionEnable) {
             [newTile setTarget:self action:@selector(tile:)];
-        }
+//        }
 		[currentTile removeFromSuperview];
 		[currentTile release];
 		currentTile = newTile;
@@ -1027,9 +1024,9 @@
                                                                            marks:ar 
                                                                 startDayOnSunday:sunday 
                                                                        markTexts:markTexts] autorelease];
-    if (userInteractionEnable) {
+//    if (userInteractionEnable) {
         [refresh setTarget:self action:@selector(tile:)];
-    }
+//    }
 	
 	[self.tileBox addSubview:refresh];
 	[currentTile removeFromSuperview];
@@ -1111,9 +1108,6 @@
 		leftArrow.tag = 0;
 		[leftArrow addTarget:self action:@selector(changeMonth:) forControlEvents:UIControlEventTouchUpInside];
 		
-		
-		
-
 		[leftArrow setImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Left Arrow"] forState:0];
 		
 		leftArrow.frame = CGRectMake(0, 0, 48, 38);
