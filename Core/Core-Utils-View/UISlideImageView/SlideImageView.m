@@ -91,7 +91,7 @@
         [imageView setImage:[UIImage imageNamed:defaultImage]];
                 
         NSString *imagePath = [images objectAtIndex:i];
-//        NSLog(@"imagePath = %@", imagePath);
+        NSLog(@"imagePath = %@", imagePath);
         if ([imagePath isAbsolutePath]) {
             // Load image from file
             UIImage *image = [[UIImage alloc] initWithContentsOfFile:imagePath];
