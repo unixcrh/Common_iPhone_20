@@ -993,6 +993,22 @@
     [view release];
 }
 
+- (UIViewController *)superViewControllerForClass:(Class)controllerClass
+{
+    UIViewController *retViewController = nil;
+    for (UIViewController *viewController in self.navigationController.viewControllers) {
+        if ([viewController class] == controllerClass) {
+            retViewController = viewController;
+        }
+    }
+    return retViewController;
+}
+
+- (BOOL)hasSuperViewControllerForClass:(Class)controllerClass
+{
+    UIViewController *viewController = [self superViewControllerForClass:controllerClass];
+    return (viewController != nil);
+}
 
 #pragma mark - static method
 

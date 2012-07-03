@@ -33,6 +33,7 @@
 + (NSString*)getAppLink:(NSString*)appId;
 + (BOOL) canFaceTime;
 + (void) makeFaceTime:(NSString *)faceTimeId;
++ (NSString*)getAppVersion;
 
 + (UIViewController*)addViewController:(NSObject*)viewControllerAllocObject viewTitle:(NSString*)viewTitle viewImage:(NSString*)viewImage hasNavController:(BOOL)hasNavController viewControllers:(NSMutableArray*)viewControllers;
 

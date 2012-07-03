@@ -143,6 +143,12 @@
 	
 }
 
++ (NSString*)getAppVersion
+{
+    NSString* version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    return version;
+}
+
 + (NSString*)getAppLink:(NSString*)appId
 {
 	NSString* iTunesLink = [NSString stringWithFormat:

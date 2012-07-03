@@ -311,6 +311,52 @@ NSString *chineseWeekDayFromDate(NSDate *date)
     return [getWeekDayArray() objectAtIndex:weekIndex-1];
 }
 
+
+NSString* chineseBeforeTime(NSDate* date)
+{
+    int interval = [date timeIntervalSinceNow];
+    if (interval <= 0) {
+        if (interval > -60) {
+            return [NSString stringWithFormat:@"%d秒前",interval/(-1)];
+        } else if (interval >-3600) {
+            return [NSString stringWithFormat:@"%d分钟前",interval/(-60)];
+        } else if (interval > -3600*24) {
+            return [NSString stringWithFormat:@"%d小时前",interval/(-60*60)];
+        } else if (interval > -3600*24*28) {
+            return [NSString stringWithFormat:@"%d天前",interval/(-60*60*24)];
+        } else {
+            return nil;
+        }
+    } else {
+        return @"20秒前";
+    }
+    
+    return nil;
+}
+
+NSString* englishBeforeTime(NSDate* date)
+{
+    int interval = [date timeIntervalSinceNow];
+    if (interval <= 0) {
+        if (interval > -60) {
+            return [NSString stringWithFormat:@"%d seconds ago",interval/(-1)];
+        } else if (interval >-3600) {
+            return [NSString stringWithFormat:@"%d minutes ago",interval/(-60)];
+        } else if (interval > -3600*24) {
+            return [NSString stringWithFormat:@"%d hours ago",interval/(-60*60)];
+        } else if (interval > -3600*24*28) {
+            return [NSString stringWithFormat:@"%d days ago",interval/(-60*60*24)];
+        } else {
+            return nil;
+        }
+    } else {
+        return @"20 seconds ago";
+    }
+    
+    return nil;
+}
+
+
 NSString *chineseWeekDay2FromDate(NSDate *date)
 {
     NSDateComponents *dc = getChineseDateComponents(date);
@@ -320,6 +366,7 @@ NSString *chineseWeekDay2FromDate(NSDate *date)
         return @"";
     }
     return [getWeekDay2Array() objectAtIndex:weekIndex-1];
+
 }
 /*
  // The date in your source timezone (eg. EST)

@@ -30,6 +30,7 @@
 - (NSString *)stringByAddQueryParameter:(NSString*)parameter value:(NSString*)value;
 - (NSString *)stringByAddQueryParameter:(NSString*)parameter boolValue:(BOOL)value;
 - (NSString *)stringByAddQueryParameter:(NSString*)parameter intValue:(int)value;
+- (NSString *)stringByAddQueryParameter:(NSString*)parameter longValue:(int)value;
 - (NSString *)stringByAddQueryParameter:(NSString*)parameter doubleValue:(double)value;
 
 + (NSString*)formatPhone:(NSString*)phone countryTelPrefix:(NSString*)countryTelPrefix;
