@@ -30,4 +30,6 @@
 - (void)publishWeibo:(NSString*)text imageFilePath:(NSString*)imageFilePath delegate:(id<SNSServiceDelegate>)delegate;
 + (QQWeiboService*)defaultService;
 
+- (void)saveToken:(NSString*)token secret:(NSString*)secret;
+
 @end

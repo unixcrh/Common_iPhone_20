@@ -18,6 +18,7 @@
 @property (assign, nonatomic) BOOL isSoundOn;
 @property (assign, nonatomic) BOOL isMusicOn;
 @property (assign, nonatomic) BOOL isBGMPrepared;
+@property (assign, nonatomic) BOOL isVibrateOn;
 @property (assign, nonatomic) float volume;
 + (AudioManager*)defaultManager;
 - (void)saveSoundSettings;

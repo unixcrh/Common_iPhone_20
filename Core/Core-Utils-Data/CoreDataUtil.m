@@ -86,7 +86,7 @@ static CoreDataManager* _defaultDataManager;
 
 - (id)initWithDBName:(NSString*)name dataModelName:(NSString*)dmName hasWorkingQueue:(BOOL)hasWorkingQueue sharePersisitentStore:(NSPersistentStoreCoordinator*)sharePersisitentStore
 {
-	NSString* queueName;
+	NSString* queueName = @"";
     self.dbName = @"";
 	if (self = [super init]){
 		if (name){
