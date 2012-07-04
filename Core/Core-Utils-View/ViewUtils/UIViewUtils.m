@@ -164,6 +164,13 @@
     
 }
 
+- (void)removeAllSubviews
+{
+    for (UIView *subview in self.subviews) {
+        [subview removeFromSuperview];
+    }
+}
+
 
 @end
 

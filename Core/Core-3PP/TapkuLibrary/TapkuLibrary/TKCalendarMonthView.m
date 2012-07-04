@@ -326,6 +326,9 @@
 }
 - (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark markText:(NSString *)text font:(UIFont*)f1 font2:(UIFont*)f2{
 	
+    UIColor *color = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
+	[color set];
+    
 	NSString *str = [NSString stringWithFormat:@"%d",day];
 	
 	r.size.height -= 2;
@@ -336,6 +339,8 @@
 	  lineBreakMode: UILineBreakModeWordWrap 
 		  alignment: UITextAlignmentCenter];
 	
+    color = [UIColor colorWithRed:51/255. green:51/255. blue:51/255. alpha:1];
+    [color set];
 	if(mark){
 		r.size.height = 10;
         r.origin.y += 25;
