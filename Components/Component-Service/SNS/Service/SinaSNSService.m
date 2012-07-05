@@ -92,6 +92,7 @@ static SinaSNSService* _defaultSinaService;
 
 - (void)logout
 {
+    self.engine = [[[WBEngine alloc] initWithAppKey:self.appkey appSecret:self.appSecret] autorelease];
     [_engine logOut];
 }
 
