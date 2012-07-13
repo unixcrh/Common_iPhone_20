@@ -52,7 +52,9 @@ static AudioManager* globalGetAudioManager()
     if (soundFilePath) {
         NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
         NSError* error = nil;
-        self.backgroundMusicPlayer = [[[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:&error] autorelease];
+        AVAudioPlayer* player = [[AVAudioPlayer alloc] initWithContentsOfURL:soundFileURL error:&error];
+        self.backgroundMusicPlayer = player;
+        [player release];
         if (!error){
             PPDebug(@"<AudioManager>Init audio player successfully, sound file %@", soundFilePath);
             self.backgroundMusicPlayer.numberOfLoops = -1; //infinite
@@ -91,7 +93,7 @@ static AudioManager* globalGetAudioManager()
     else {
         PPDebug(@"<AudioManager>Fail to init audio player with sound file%@, error = %@", url, [error description]);
         self.isBGMPrepared = NO;
-        _backgroundMusicPlayer = nil;
+        self.backgroundMusicPlayer = nil;
         return NO;
     }
     return NO;

@@ -186,4 +186,9 @@ static NSInteger deviceModel = MODEL_UNKNOWN;
     return returnValue;
 }
 
++ (NSString *)deviceOS
+{
+    return [NSString stringWithFormat:@"%@_%@", [UIDevice currentDevice].systemName, [UIDevice currentDevice].systemVersion];    
+}
+
 @end
