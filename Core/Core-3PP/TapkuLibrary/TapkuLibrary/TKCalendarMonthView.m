@@ -324,10 +324,9 @@
 //	return CGRectMake(col*46, row*44+6, 47, 45);
     return CGRectMake(col*WIDTH_LATTICE, row*latticeHeight+6, WIDTH_LATTICE + 1, latticeHeight + 1);
 }
-- (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark markText:(NSString *)text font:(UIFont*)f1 font2:(UIFont*)f2{
+- (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark markText:(NSString *)text font:(UIFont*)f1 font2:(UIFont*)f2 color1:(UIColor *)color1 color2:(UIColor *)color2{
 	
-    UIColor *color = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
-	[color set];
+	[color1 set];
     
 	NSString *str = [NSString stringWithFormat:@"%d",day];
 	
@@ -339,8 +338,7 @@
 	  lineBreakMode: UILineBreakModeWordWrap 
 		  alignment: UITextAlignmentCenter];
 	
-    color = [UIColor colorWithRed:51/255. green:51/255. blue:51/255. alpha:1];
-    [color set];
+    [color2 set];
 	if(mark){
 		r.size.height = 10;
         r.origin.y += 25;
@@ -378,44 +376,43 @@
 	
 	UIFont *font = [UIFont boldSystemFontOfSize:dateFontSize];
 	UIFont *font2 =[UIFont boldSystemFontOfSize:dotFontSize];
-	UIColor *color = [UIColor grayColor];
-	
+	UIColor *color1 = [UIColor grayColor];
+	UIColor *color2 = [UIColor colorWithRed:51/255. green:51/255. blue:51/255. alpha:1];
+
 	if(firstOfPrev>0){
-		[color set];
 		for(int i = firstOfPrev;i<= lastOfPrev;i++){
 			r = [self rectForCellAtIndex:index];
 			if ([marks count] > 0)
-				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
+				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
 			else
-				[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2];
+				[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
 			index++;
 		}
 	}
 	
 	
-	color = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
-	[color set];
+	color1 = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
 	for(int i=1; i <= daysInMonth; i++){
 		
 		r = [self rectForCellAtIndex:index];
 		if(today == i) [[UIColor whiteColor] set];
 		
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
+			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
 		else
-			[self drawTileInRect:r day:i mark:NO markText:[markTexts objectAtIndex:index] font:font font2:font2];
-		if(today == i) [color set];
+			[self drawTileInRect:r day:i mark:NO markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+//		if(today == i) [color set];
 		index++;
 	}
 	
-	[[UIColor grayColor] set];
+	color1 = [UIColor grayColor];
 	int i = 1;
 	while(index % 7 != 0){
 		r = [self rectForCellAtIndex:index] ;
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
+			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
 		else
-			[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2];
+			[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
 		i++;
 		index++;
 	}
