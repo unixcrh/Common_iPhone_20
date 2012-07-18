@@ -351,4 +351,10 @@
         } 
     }
 }
+
+- (void)hide:(BOOL)isHide
+{
+    self.customTabBarView.hidden = isHide;
+}
+
 @end

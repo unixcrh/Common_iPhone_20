@@ -52,7 +52,7 @@ typedef enum {
 - (void)selectedTab:(UIButton *)button;
 - (void)setBadgeValue:(NSString*)value buttonTag:(NSInteger)tag;
 - (void)setTextColor:(UIColor*)normalTextColor selectTextColor:(UIColor*)selectTextColor;
-
+- (void)hide:(BOOL)isHide;
 
 
 @end
