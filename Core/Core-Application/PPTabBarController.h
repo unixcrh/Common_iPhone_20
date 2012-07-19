@@ -42,6 +42,9 @@ typedef enum {
 
 @property(nonatomic, assign) CubeTabBarControllerAnimation animation;
 @property(nonatomic, retain) UIColor *backgroundColor;
+@property (nonatomic, retain) UIImageView *topImageView;
+@property (nonatomic, assign) BOOL topImageViewAnimation;
+@property (nonatomic, assign) CGFloat topImageViewDown;
 
 // for external call
 - (void)setBarBackground:(NSString*)backgroundImageName;
@@ -52,7 +55,7 @@ typedef enum {
 - (void)selectedTab:(UIButton *)button;
 - (void)setBadgeValue:(NSString*)value buttonTag:(NSInteger)tag;
 - (void)setTextColor:(UIColor*)normalTextColor selectTextColor:(UIColor*)selectTextColor;
-- (void)hide:(BOOL)isHide;
-
+- (void)hideCustomTabBarView:(BOOL)isHide;
+- (void)setTopImageView:(UIImageView *)imageView down:(CGFloat)down animated:(BOOL)animated;
 
 @end
