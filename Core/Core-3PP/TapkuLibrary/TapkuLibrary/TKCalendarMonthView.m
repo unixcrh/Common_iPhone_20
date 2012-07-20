@@ -135,8 +135,8 @@
 
 #pragma mark -
 
-#define dotFontSize 12.0
-#define dateFontSize 20.0
+#define dotFontSize 11.0
+#define dateFontSize 18.0
 
 @interface TKCalendarMonthTiles (private)
 
@@ -149,7 +149,7 @@
 #pragma mark -
 
 //#define HEIGHT_LATTICE 44
-#define HEIGHT_LATTICE 58
+#define HEIGHT_LATTICE 55
 #define WIDTH_LATTICE 46
 
 #define HEIGHT_CURRENT_DAY 20
@@ -341,7 +341,7 @@
     [color2 set];
 	if(mark){
 		r.size.height = 10;
-        r.origin.y += 25;
+        r.origin.y += 22;
 
 		NSArray *tA = [text componentsSeparatedByString:@"\n"];
         
@@ -358,7 +358,9 @@
 - (void) drawRect:(CGRect)rect {
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
-	UIImage *tile = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile.png")];
+//	UIImage *tile = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile.png")];
+    UIImage *tile = [UIImage imageNamed:@"date_tile_bg.png"];
+
 //	CGRect r = CGRectMake(0, 0, 46, 44);
     CGRect r = CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight);
 
@@ -370,20 +372,26 @@
 		CGRect r =[self rectForCellAtIndex:index];
 		r.origin.y -= 7;
 		[[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Tile.png")] drawInRect:r];
+//        [[UIImage imageNamed:@"date_tile_bg.png"] drawInRect:r];
+
 	}
 	
 	int index = 0;
 	
 	UIFont *font = [UIFont boldSystemFontOfSize:dateFontSize];
-	UIFont *font2 =[UIFont boldSystemFontOfSize:dotFontSize];
-	UIColor *color1 = [UIColor grayColor];
+//	UIFont *font2 =[UIFont boldSystemFontOfSize:dotFontSize];
+	UIFont *font2 =[UIFont systemFontOfSize:dotFontSize];
+//	UIColor *color1 = [UIColor grayColor];
+    UIColor *color1 = [UIColor colorWithRed:172./255. green:172./255. blue:172./255. alpha:1];
 	UIColor *color2 = [UIColor colorWithRed:51/255. green:51/255. blue:51/255. alpha:1];
 
 	if(firstOfPrev>0){
 		for(int i = firstOfPrev;i<= lastOfPrev;i++){
 			r = [self rectForCellAtIndex:index];
 			if ([marks count] > 0)
-				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+//				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+                [self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
+
 			else
 				[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
 			index++;
@@ -405,12 +413,15 @@
 		index++;
 	}
 	
-	color1 = [UIColor grayColor];
+//	color1 = [UIColor grayColor];
+    color1 = [UIColor colorWithRed:172./255. green:172./255. blue:172./255. alpha:1];
 	int i = 1;
 	while(index % 7 != 0){
 		r = [self rectForCellAtIndex:index] ;
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+//			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+            [self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
+
 		else
 			[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
 		i++;
@@ -551,7 +562,8 @@
 	if ([marks count] > 0) {
 		if([[marks objectAtIndex: row * 7 + column] boolValue]){
             [self.selectedImageView addSubview:self.dot];
-            self.dot.text = [markTexts objectAtIndex: row * 7 + column];
+//            self.dot.text = [markTexts objectAtIndex: row * 7 + column];
+            self.dot.text = ((portion == 1) ? [markTexts objectAtIndex: row * 7 + column] : @"");
         }
 		else
 			[self.dot removeFromSuperview];
@@ -628,7 +640,7 @@
 		CGRect r = self.selectedImageView.bounds;
 //		r.origin.y += 35;
 //		r.size.height -= 31;
-        r.origin.y += 23;
+        r.origin.y += 21;
         r.size.height -= HEIGHT_CURRENT_DAY;
 
 		dot = [[UILabel alloc] initWithFrame:r];
