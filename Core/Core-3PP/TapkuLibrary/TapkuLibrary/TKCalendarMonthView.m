@@ -358,8 +358,8 @@
 - (void) drawRect:(CGRect)rect {
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
-//	UIImage *tile = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile.png")];
-    UIImage *tile = [UIImage imageNamed:@"date_tile_bg.png"];
+	UIImage *tile = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile.png")];
+//    UIImage *tile = [UIImage imageNamed:@"date_tile_bg.png"];
 
 //	CGRect r = CGRectMake(0, 0, 46, 44);
     CGRect r = CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight);
@@ -372,7 +372,7 @@
 		CGRect r =[self rectForCellAtIndex:index];
 		r.origin.y -= 7;
 		[[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Tile.png")] drawInRect:r];
-//        [[UIImage imageNamed:@"date_tile_bg.png"] drawInRect:r];
+//        [[UIImage imageNamed:@"date_tile_selected_bg.png"] drawInRect:r];
 
 	}
 	
@@ -447,12 +447,14 @@
 		self.currentDay.shadowOffset = CGSizeMake(0, 1);
 		self.dot.shadowOffset = CGSizeMake(0, 1);
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Selected Tile.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = YES;
 	}else if(markWasOnToday){
 		self.dot.shadowOffset = CGSizeMake(0, -1);
 		self.currentDay.shadowOffset = CGSizeMake(0, -1);
 		
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = NO;
 	}
 	
@@ -542,16 +544,19 @@
 	
 	if(portion != 1){
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Gray.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_bg.png"];
 		markWasOnToday = YES;
 	}else if(portion==1 && day == today){
 		self.currentDay.shadowOffset = CGSizeMake(0, 1);
 		self.dot.shadowOffset = CGSizeMake(0, 1);
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Selected Tile.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = YES;
 	}else if(markWasOnToday){
 		self.dot.shadowOffset = CGSizeMake(0, -1);
 		self.currentDay.shadowOffset = CGSizeMake(0, -1);
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = NO;
 	}
 	
@@ -660,9 +665,12 @@
 
 - (UIImageView *) selectedImageView{
 	if(selectedImageView==nil){
-//		selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"]];
+		selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"]];
+//        selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"date_tile_selected_bg.png"]];
+
         selectedImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight)];
         selectedImageView.image = [UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"];
+//        selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 	}
 	return selectedImageView;
 }
@@ -1097,7 +1105,7 @@
 #pragma mark Properties
 - (UIImageView *) topBackground{
 	if(topBackground==nil){
-//		topBackground = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")]];
+		topBackground = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")]];
         
         CGFloat height = hasMonthYearAndArrow ? 44 : 18;
         topBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0, 44 - height, self.bounds.size.width, height)];
