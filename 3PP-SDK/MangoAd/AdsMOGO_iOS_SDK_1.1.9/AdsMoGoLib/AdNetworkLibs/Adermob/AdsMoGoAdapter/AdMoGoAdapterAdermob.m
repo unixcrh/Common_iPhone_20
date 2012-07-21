@@ -42,6 +42,7 @@
     [AderSDK startAdService:view appID:networkConfig.pubId adFrame:adFrame model:MODEL_RELEASE];
     [AderSDK setDelegate:self];
     self.adNetworkView = view;
+    [view release];
 }
 
 - (void)stopBeingDelegate{
