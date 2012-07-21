@@ -39,6 +39,8 @@
 
 + (UIViewController*)addViewController:(NSObject*)viewControllerAllocObject viewTitle:(NSString*)viewTitle viewImage:(NSString*)viewImage hasNavController:(BOOL)hasNavController hideNavigationBar:(BOOL)hideNavigationBar viewControllers:(NSMutableArray*)viewControllers;
 
++ (UIViewController*)addInitViewController:(UIViewController*)viewController viewTitle:(NSString*)viewTitle viewImage:(NSString*)viewImage hasNavController:(BOOL)hasNavController hideNavigationBar:(BOOL)hideNavigationBar viewControllers:(NSMutableArray*)viewControllers;
+
 + (void)openURL:(NSString*)url;
 + (UIAlertView*)popup:(NSString *)title msg:(NSString*)msg;
 + (UIAlertView*)showTextView:(NSString*)title okButtonTitle:(NSString*)okButtonTitle cancelButtonTitle:(NSString*)cancelButtonTitle  delegate:(id<UIAlertViewDelegate>)delegate;

@@ -32,6 +32,10 @@
 @synthesize animation;
 @synthesize backgroundColor;
 
+@synthesize topImageView = _topImageView;
+@synthesize topImageViewAnimation = _topImageViewAnimation;
+@synthesize topImageViewDown = _topImageViewDown;
+
 - (void)setSelectedViewController:(UIViewController *)next
 {
 	if (self.animation == CubeTabBarControllerAnimationNone) {
@@ -253,10 +257,41 @@
 
 }
 
+- (void)setTopImageView:(UIImageView *)imageView down:(CGFloat)down animated:(BOOL)animated
+{
+    self.topImageView = imageView;
+    self.topImageViewDown = down;
+    self.topImageViewAnimation = animated;
+}
+
+
+#define TAG_TOP_IMAGE_VIEW 20120719
+- (void)changeTopImageViewSite:(CGPoint)toCenter animated:(BOOL)animated
+{
+    self.topImageView.tag = TAG_TOP_IMAGE_VIEW;
+    UIImageView *imageView = (UIImageView *)[customTabBarView viewWithTag:TAG_TOP_IMAGE_VIEW];
+    if (imageView == nil) {
+        [customTabBarView addSubview:_topImageView];
+        [_topImageView setCenter:toCenter];
+    }else {
+        if (animated) {
+            [UIView beginAnimations:nil context:nil];
+            [UIView setAnimationDuration:0.25];
+            [_topImageView setCenter:toCenter];
+            [UIImageView commitAnimations];
+        }else {
+            [_topImageView setCenter:toCenter];
+        }
+    }
+}
+
+
 - (void)selectedTab:(UIButton *)button{
 
     // set new selected index
 	self.currentSelectedIndex = button.tag;
+    
+    CGPoint topImageViewCenter;
     
     // update tab bar image for all buttons
     int i=0;
@@ -268,6 +303,10 @@
             
             // set text color
             [b setTitleColor:self.selectTextColor forState:UIControlStateNormal];
+            
+            //top image center
+            CGFloat oneWidth = customTabBarView.frame.size.width/self.viewControllers.count;
+            topImageViewCenter = CGPointMake(i * oneWidth + 0.5 * oneWidth, - (0.5 * _topImageView.frame.size.height-self.topImageViewDown));
         }
         else{
             UIViewController* v = [self.viewControllers objectAtIndex:i];
@@ -281,6 +320,8 @@
         
         i++;
     }
+    
+    [self changeTopImageViewSite:topImageViewCenter animated:_topImageViewAnimation];
             
     // activate normal tab bar controller
 //    self.selectedViewController = [self.viewControllers objectAtIndex:self.currentSelectedIndex];
@@ -324,6 +365,7 @@
 	[slideBg release];
 	[buttons release];
     [customTabBarView release];
+    [_topImageView release];
 	[super dealloc];
 }
 
@@ -351,4 +393,10 @@
         } 
     }
 }
+
+- (void)hideCustomTabBarView:(BOOL)isHide;
+{
+    self.customTabBarView.hidden = isHide;
+}
+
 @end

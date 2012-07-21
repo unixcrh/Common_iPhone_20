@@ -41,6 +41,8 @@
 
 - (void)removeAllSubviews;
 
+- (void)moveTtoCenter:(CGPoint)center needAnimation:(BOOL)need animationDuration:(NSTimeInterval)interval;
+
 @end
 
 @interface UISearchBar (UISearchBarUtils)

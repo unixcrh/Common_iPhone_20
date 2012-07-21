@@ -135,8 +135,8 @@
 
 #pragma mark -
 
-#define dotFontSize 12.0
-#define dateFontSize 20.0
+#define dotFontSize 11.0
+#define dateFontSize 18.0
 
 @interface TKCalendarMonthTiles (private)
 
@@ -149,7 +149,7 @@
 #pragma mark -
 
 //#define HEIGHT_LATTICE 44
-#define HEIGHT_LATTICE 58
+#define HEIGHT_LATTICE 55
 #define WIDTH_LATTICE 46
 
 #define HEIGHT_CURRENT_DAY 20
@@ -324,10 +324,9 @@
 //	return CGRectMake(col*46, row*44+6, 47, 45);
     return CGRectMake(col*WIDTH_LATTICE, row*latticeHeight+6, WIDTH_LATTICE + 1, latticeHeight + 1);
 }
-- (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark markText:(NSString *)text font:(UIFont*)f1 font2:(UIFont*)f2{
+- (void) drawTileInRect:(CGRect)r day:(int)day mark:(BOOL)mark markText:(NSString *)text font:(UIFont*)f1 font2:(UIFont*)f2 color1:(UIColor *)color1 color2:(UIColor *)color2{
 	
-    UIColor *color = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
-	[color set];
+	[color1 set];
     
 	NSString *str = [NSString stringWithFormat:@"%d",day];
 	
@@ -339,11 +338,10 @@
 	  lineBreakMode: UILineBreakModeWordWrap 
 		  alignment: UITextAlignmentCenter];
 	
-    color = [UIColor colorWithRed:51/255. green:51/255. blue:51/255. alpha:1];
-    [color set];
+    [color2 set];
 	if(mark){
 		r.size.height = 10;
-        r.origin.y += 25;
+        r.origin.y += 22;
 
 		NSArray *tA = [text componentsSeparatedByString:@"\n"];
         
@@ -361,6 +359,8 @@
 	
 	CGContextRef context = UIGraphicsGetCurrentContext();
 	UIImage *tile = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile.png")];
+//    UIImage *tile = [UIImage imageNamed:@"date_tile_bg.png"];
+
 //	CGRect r = CGRectMake(0, 0, 46, 44);
     CGRect r = CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight);
 
@@ -372,50 +372,58 @@
 		CGRect r =[self rectForCellAtIndex:index];
 		r.origin.y -= 7;
 		[[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Tile.png")] drawInRect:r];
+//        [[UIImage imageNamed:@"date_tile_selected_bg.png"] drawInRect:r];
+
 	}
 	
 	int index = 0;
 	
 	UIFont *font = [UIFont boldSystemFontOfSize:dateFontSize];
-	UIFont *font2 =[UIFont boldSystemFontOfSize:dotFontSize];
-	UIColor *color = [UIColor grayColor];
-	
+//	UIFont *font2 =[UIFont boldSystemFontOfSize:dotFontSize];
+	UIFont *font2 =[UIFont systemFontOfSize:dotFontSize];
+//	UIColor *color1 = [UIColor grayColor];
+    UIColor *color1 = [UIColor colorWithRed:172./255. green:172./255. blue:172./255. alpha:1];
+	UIColor *color2 = [UIColor colorWithRed:51/255. green:51/255. blue:51/255. alpha:1];
+
 	if(firstOfPrev>0){
-		[color set];
 		for(int i = firstOfPrev;i<= lastOfPrev;i++){
 			r = [self rectForCellAtIndex:index];
 			if ([marks count] > 0)
-				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
+//				[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+                [self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
+
 			else
-				[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2];
+				[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
 			index++;
 		}
 	}
 	
 	
-	color = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
-	[color set];
+	color1 = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
 	for(int i=1; i <= daysInMonth; i++){
 		
 		r = [self rectForCellAtIndex:index];
 		if(today == i) [[UIColor whiteColor] set];
 		
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
+			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
 		else
-			[self drawTileInRect:r day:i mark:NO markText:[markTexts objectAtIndex:index] font:font font2:font2];
-		if(today == i) [color set];
+			[self drawTileInRect:r day:i mark:NO markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+//		if(today == i) [color set];
 		index++;
 	}
 	
-	[[UIColor grayColor] set];
+//	color1 = [UIColor grayColor];
+    color1 = [UIColor colorWithRed:172./255. green:172./255. blue:172./255. alpha:1];
 	int i = 1;
 	while(index % 7 != 0){
 		r = [self rectForCellAtIndex:index] ;
 		if ([marks count] > 0) 
-			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2];
+//			[self drawTileInRect:r day:i mark:[[marks objectAtIndex:index] boolValue] markText:[markTexts objectAtIndex:index] font:font font2:font2 color1:color1 color2:color2];
+            [self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
+
 		else
-			[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2];
+			[self drawTileInRect:r day:i mark:NO markText:nil font:font font2:font2 color1:color1 color2:color2];
 		i++;
 		index++;
 	}
@@ -439,12 +447,14 @@
 		self.currentDay.shadowOffset = CGSizeMake(0, 1);
 		self.dot.shadowOffset = CGSizeMake(0, 1);
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Selected Tile.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = YES;
 	}else if(markWasOnToday){
 		self.dot.shadowOffset = CGSizeMake(0, -1);
 		self.currentDay.shadowOffset = CGSizeMake(0, -1);
 		
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = NO;
 	}
 	
@@ -534,16 +544,19 @@
 	
 	if(portion != 1){
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Gray.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_bg.png"];
 		markWasOnToday = YES;
 	}else if(portion==1 && day == today){
 		self.currentDay.shadowOffset = CGSizeMake(0, 1);
 		self.dot.shadowOffset = CGSizeMake(0, 1);
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Today Selected Tile.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = YES;
 	}else if(markWasOnToday){
 		self.dot.shadowOffset = CGSizeMake(0, -1);
 		self.currentDay.shadowOffset = CGSizeMake(0, -1);
 		self.selectedImageView.image = [UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected.png")];
+//        self.selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 		markWasOnToday = NO;
 	}
 	
@@ -554,7 +567,8 @@
 	if ([marks count] > 0) {
 		if([[marks objectAtIndex: row * 7 + column] boolValue]){
             [self.selectedImageView addSubview:self.dot];
-            self.dot.text = [markTexts objectAtIndex: row * 7 + column];
+//            self.dot.text = [markTexts objectAtIndex: row * 7 + column];
+            self.dot.text = ((portion == 1) ? [markTexts objectAtIndex: row * 7 + column] : @"");
         }
 		else
 			[self.dot removeFromSuperview];
@@ -631,7 +645,7 @@
 		CGRect r = self.selectedImageView.bounds;
 //		r.origin.y += 35;
 //		r.size.height -= 31;
-        r.origin.y += 23;
+        r.origin.y += 21;
         r.size.height -= HEIGHT_CURRENT_DAY;
 
 		dot = [[UILabel alloc] initWithFrame:r];
@@ -651,9 +665,12 @@
 
 - (UIImageView *) selectedImageView{
 	if(selectedImageView==nil){
-//		selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"]];
+		selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"]];
+//        selectedImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"date_tile_selected_bg.png"]];
+
         selectedImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, WIDTH_LATTICE, latticeHeight)];
         selectedImageView.image = [UIImage imageNamedTK:@"TapkuLibrary.bundle/Images/calendar/Month Calendar Date Tile Selected"];
+//        selectedImageView.image = [UIImage imageNamed:@"date_tile_selected_bg.png"];
 	}
 	return selectedImageView;
 }
@@ -1088,7 +1105,7 @@
 #pragma mark Properties
 - (UIImageView *) topBackground{
 	if(topBackground==nil){
-//		topBackground = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")]];
+		topBackground = [[UIImageView alloc] initWithImage:[UIImage imageWithContentsOfFile:TKBUNDLE(@"TapkuLibrary.bundle/Images/calendar/Month Grid Top Bar.png")]];
         
         CGFloat height = hasMonthYearAndArrow ? 44 : 18;
         topBackground = [[UIImageView alloc] initWithFrame:CGRectMake(0, 44 - height, self.bounds.size.width, height)];
