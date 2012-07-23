@@ -239,6 +239,30 @@
     return [UIUtils addViewController:viewControllerAllocObject viewTitle:viewTitle viewImage:viewImage hasNavController:hasNavController hideNavigationBar:NO viewControllers:viewControllers];
 }
 
+
++ (UIViewController*)addInitViewController:(UIViewController*)viewController viewTitle:(NSString*)viewTitle viewImage:(NSString*)viewImage hasNavController:(BOOL)hasNavController hideNavigationBar:(BOOL)hideNavigationBar viewControllers:(NSMutableArray*)viewControllers
+{
+	UITabBarItem* button1 = [[UITabBarItem alloc] initWithTitle:viewTitle image:[UIImage imageNamed:viewImage] tag:0];							   
+	if (hasNavController){
+		UINavigationController *navController1 = [[UINavigationController alloc] initWithRootViewController:viewController];				
+		[viewControllers addObject:navController1];
+        navController1.navigationBarHidden = hideNavigationBar;
+		navController1.tabBarItem = button1;	
+		navController1.title = viewTitle;
+		viewController.title = viewTitle;   
+        
+        [navController1 release];
+	}
+	else {
+		[viewControllers addObject:viewController];
+		viewController.tabBarItem = button1;	
+	}
+    
+    [button1 release];	
+	return viewController;
+}
+
+
 #pragma mark Action Sheet Delegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex

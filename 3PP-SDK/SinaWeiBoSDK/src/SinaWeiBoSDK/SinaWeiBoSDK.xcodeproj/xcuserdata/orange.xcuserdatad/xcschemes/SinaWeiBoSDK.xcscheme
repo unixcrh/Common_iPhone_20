@@ -13,10 +13,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D2AAC07D0554694100DB518D"
-               BuildableName = "libQWeiboSDK4iOS.a"
-               BlueprintName = "QWeiboSDK4iOS"
-               ReferencedContainer = "container:QWeiboSDK4iOS.xcodeproj">
+               BlueprintIdentifier = "E6ABCC1814988423008E0A37"
+               BuildableName = "libSinaWeiBoSDK.a"
+               BlueprintName = "SinaWeiBoSDK"
+               ReferencedContainer = "container:SinaWeiBoSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

@@ -171,6 +171,18 @@
     }
 }
 
+- (void)moveTtoCenter:(CGPoint)center needAnimation:(BOOL)need animationDuration:(NSTimeInterval)interval
+{
+    if (need) {
+        [UIView beginAnimations:nil context:nil];
+        [UIImageView setAnimationDuration:interval];
+        [self setCenter:center];
+        [UIImageView commitAnimations];        
+    }else{
+        [self setCenter:center];        
+    }
+}
+
 
 @end
 
