@@ -445,6 +445,8 @@
 
 - (void)dealloc
 {
+    PPDebug(@"%@ dealloc", [self description]);
+    
 	[self releaseAddressBook];
 	[self releaseWorkingQueue];
 	[backgroundImageName release];
@@ -459,15 +461,15 @@
     [titlePPSegControl release];
     
     [selectedImageSaveFileName release];
-    [selectedImage release];
-    [titleSegControl release];
 
 #ifdef _THREE20_	
 	[loadingView release];
 #endif
-	
-	[alertView release];
-	
+
+    PPRelease(selectedImage);
+	PPRelease(titleSegControl);
+	PPRelease(alertView);
+    
 	[super dealloc];
 }
 

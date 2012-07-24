@@ -365,8 +365,13 @@ static FacebookSNSService* _defaultService;
  * successfully.
  */
 - (void)request:(FBRequest *)request didFailWithError:(NSError *)error {
-    NSLog(@"Err message: %@", [[error userInfo] objectForKey:@"error_msg"]);
-    NSLog(@"Err code: %d", [error code]);
+    PPDebug(@"<Facebook> <didFailWithError> Err message: %@", [[error userInfo] objectForKey:@"error_msg"]);
+    PPDebug(@"<Facebook> <didFailWithError> Err code: %d", [error code]);
+}
+
+- (BOOL)isAuthorizeExpired
+{
+    return ([_facebook isSessionValid] == NO);
 }
 
 @end
