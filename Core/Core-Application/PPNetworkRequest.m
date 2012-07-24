@@ -170,20 +170,24 @@
         output.resultCode = statusCode;
     }
     else{
-        NSString *text = [request responseString];
         
         int endTime = time(0);
-        PPDebug(@"[RECV] data statistic (len=%d bytes, latency=%d seconds, raw=%d bytes, real=%d bytes)", 
-                [text length], (endTime - startTime),
-                [[request rawResponseData] length], [[request responseData] length]);
-        
-        PPDebug(@"[RECV] data = %@", [request responseString]);
-        
+
         if (outputFormat == FORMAT_PB){
+            PPDebug(@"[RECV] data statistic (len=%d bytes, latency=%d seconds, raw=%d bytes, real=%d bytes)", 
+                    [[request responseData] length], (endTime - startTime),
+                    [[request rawResponseData] length], [[request responseData] length]);
             responseHandler(nil, output);               
             output.responseData = [request responseData];
         }
         else{
+            
+            NSStringEncoding encoding = NSUTF8StringEncoding;        
+            NSString *text = [[[NSString alloc] initWithData:[request responseData] encoding:encoding] autorelease];
+            PPDebug(@"[RECV] data statistic (len=%d bytes, latency=%d seconds, raw=%d bytes, real=%d bytes)", 
+                    [text length], (endTime - startTime),
+                    [[request rawResponseData] length], [[request responseData] length]);
+            PPDebug(@"[RECV] data = %@", [request responseString]);
             NSDictionary* dataDict = [text JSONValue];
             if (dataDict == nil){
                 output.resultCode = ERROR_CLIENT_PARSE_JSON;
