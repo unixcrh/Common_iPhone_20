@@ -32,5 +32,6 @@
 - (void)publishWeibo:(NSString*)text imageFilePath:(NSString*)imageFilePath delegate:(id<SNSServiceDelegate>)delegate;
 + (FacebookSNSService*)defaultService;
 
+- (BOOL)isAuthorizeExpired;
 
 @end
