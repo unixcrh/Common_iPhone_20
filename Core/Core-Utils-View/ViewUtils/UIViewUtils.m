@@ -183,7 +183,6 @@
     }
 }
 
-
 @end
 
 @implementation UISearchBar (UISearchBarUtils)
