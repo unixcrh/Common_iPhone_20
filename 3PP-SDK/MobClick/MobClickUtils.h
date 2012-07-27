@@ -13,5 +13,6 @@
 
 + (int)getIntValueByKey:(NSString*)key defaultValue:(int)defaultValue;
 + (NSString*)getStringValueByKey:(NSString*)key defaultValue:(NSString*)defaultValue;
++ (int)getBoolValueByKey:(NSString*)key defaultValue:(BOOL)defaultValue;
 
 @end
