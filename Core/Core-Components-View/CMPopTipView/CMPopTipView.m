@@ -174,14 +174,23 @@
 		blue = components[2];
 		alpha = components[3];
 	}
-	CGFloat colorList[] = {
+//	CGFloat colorList[] = {
+//		//red, green, blue, alpha 
+//		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
+//		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
+//		red*1.08+colourHL, green*1.08+colourHL, blue*1.08+colourHL, alpha,
+//		red     +colourHL, green     +colourHL, blue     +colourHL, alpha,
+//		red     +colourHL, green     +colourHL, blue     +colourHL, alpha
+//	};
+    CGFloat colorList[] = {
 		//red, green, blue, alpha 
-		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
-		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
-		red*1.08+colourHL, green*1.08+colourHL, blue*1.08+colourHL, alpha,
-		red     +colourHL, green     +colourHL, blue     +colourHL, alpha,
-		red     +colourHL, green     +colourHL, blue     +colourHL, alpha
+		red, green, blue, alpha,
+		red, green, blue, alpha,
+		red, green, blue, alpha,
+		red, green, blue, alpha,
+		red, green, blue, alpha,
 	};
+    
 	myColorSpace = CGColorSpaceCreateDeviceRGB();
 	myGradient = CGGradientCreateWithColorComponents(myColorSpace, colorList, locationList, locationCount);
 	CGPoint startPoint, endPoint;
