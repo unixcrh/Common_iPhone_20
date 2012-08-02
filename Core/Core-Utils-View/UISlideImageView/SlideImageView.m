@@ -23,7 +23,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+        self.scrollView = [[[UIScrollView alloc] initWithFrame:self.bounds] autorelease];
         scrollView.pagingEnabled = YES;
         scrollView.showsVerticalScrollIndicator = NO;
         scrollView.showsHorizontalScrollIndicator = NO;

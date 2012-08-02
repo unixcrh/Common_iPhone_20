@@ -79,6 +79,7 @@
 	CGContextRef c = UIGraphicsGetCurrentContext(); 
 	
 	CGContextSetRGBStrokeColor(c, 0.0, 0.0, 0.0, 1.0);	// black
+
 	CGContextSetLineWidth(c, 1.0);
     
 	CGMutablePathRef bubblePath = CGPathCreateMutable();
@@ -135,7 +136,9 @@
 	CGContextAddPath(c, bubblePath);
     CGContextSaveGState(c);
 	CGContextSetShadow(c, CGSizeMake(0, 3), 5);
-	CGContextSetRGBFillColor(c, 0.0, 0.0, 0.0, 0.9);
+//	CGContextSetRGBFillColor(c, 0.0, 0.0, 0.0, 0.9);
+    CGContextSetRGBFillColor(c, 0.0, 0.0, 0.0, 0);
+
 	CGContextFillPath(c);
     CGContextRestoreGState(c);
     
@@ -174,23 +177,15 @@
 		blue = components[2];
 		alpha = components[3];
 	}
-//	CGFloat colorList[] = {
-//		//red, green, blue, alpha 
-//		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
-//		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
-//		red*1.08+colourHL, green*1.08+colourHL, blue*1.08+colourHL, alpha,
-//		red     +colourHL, green     +colourHL, blue     +colourHL, alpha,
-//		red     +colourHL, green     +colourHL, blue     +colourHL, alpha
-//	};
-    CGFloat colorList[] = {
+	CGFloat colorList[] = {
 		//red, green, blue, alpha 
-		red, green, blue, alpha,
-		red, green, blue, alpha,
-		red, green, blue, alpha,
-		red, green, blue, alpha,
-		red, green, blue, alpha,
+		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
+		red*1.16+colourHL, green*1.16+colourHL, blue*1.16+colourHL, alpha,
+		red*1.08+colourHL, green*1.08+colourHL, blue*1.08+colourHL, alpha,
+		red     +colourHL, green     +colourHL, blue     +colourHL, alpha,
+		red     +colourHL, green     +colourHL, blue     +colourHL, alpha
 	};
-    
+
 	myColorSpace = CGColorSpaceCreateDeviceRGB();
 	myGradient = CGGradientCreateWithColorComponents(myColorSpace, colorList, locationList, locationCount);
 	CGPoint startPoint, endPoint;
@@ -203,7 +198,9 @@
 	CGGradientRelease(myGradient);
 	CGColorSpaceRelease(myColorSpace);
 	
-	CGContextSetRGBStrokeColor(c, 0.4, 0.4, 0.4, 1.0);
+//	CGContextSetRGBStrokeColor(c, 0.4, 0.4, 0.4, 1.0);
+    CGContextSetRGBStrokeColor(c, 0.4, 0.4, 0.4, (_needBubblePath ? 1.0 : 0.0));
+
 	CGContextAddPath(c, bubblePath);
 	CGContextDrawPath(c, kCGPathStroke);
 	
@@ -423,6 +420,10 @@
 	else {
 		[self finaliseDismiss];
 	}
+    
+    if ([delegate respondsToSelector:@selector(popTipViewWasDismissedByCallingDismissAnimatedMethod:)]) {
+        [delegate popTipViewWasDismissedByCallingDismissAnimatedMethod:self];
+    }
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -473,7 +474,13 @@
 }
 
 - (id)initWithMessage:(NSString *)messageToShow {
-	CGRect frame = CGRectZero;
+    return [self initWithMessage:messageToShow needBubblePath:YES];
+}
+
+- (id)initWithMessage:(NSString *)messageToShow needBubblePath:(BOOL)needBubblePath {
+    _needBubblePath = needBubblePath;
+    
+    CGRect frame = CGRectZero;
 	
 	if ((self = [self initWithFrame:frame])) {
 		self.message = messageToShow;
@@ -481,7 +488,14 @@
 	return self;
 }
 
+
 - (id)initWithCustomView:(UIView *)aView {
+    return [self initWithCustomView:aView needBubblePath:YES];
+}
+
+- (id)initWithCustomView:(UIView *)aView needBubblePath:(BOOL)needBubblePath {
+    _needBubblePath = needBubblePath;
+    
 	CGRect frame = CGRectZero;
 	
 	if ((self = [self initWithFrame:frame])) {

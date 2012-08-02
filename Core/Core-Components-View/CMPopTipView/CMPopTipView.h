@@ -115,6 +115,8 @@ typedef enum {
 	PointDirection			pointDirection;
 	CGFloat					pointerSize;
 	CGPoint					targetPoint;
+    
+    BOOL                    _needBubblePath;
 }
 
 @property (nonatomic, retain)			UIColor					*backgroundColor;
@@ -131,7 +133,10 @@ typedef enum {
 
 /* Contents can be either a message or a UIView */
 - (id)initWithMessage:(NSString *)messageToShow;
+- (id)initWithMessage:(NSString *)messageToShow needBubblePath:(BOOL)needBubblePath;
+
 - (id)initWithCustomView:(UIView *)aView;
+- (id)initWithCustomView:(UIView *)aView needBubblePath:(BOOL)needBubblePath;
 
 - (void)presentPointingAtView:(UIView *)targetView inView:(UIView *)containerView animated:(BOOL)animated;
 - (void)presentPointingAtBarButtonItem:(UIBarButtonItem *)barButtonItem animated:(BOOL)animated;
@@ -143,5 +148,9 @@ typedef enum {
 
 
 @protocol CMPopTipViewDelegate <NSObject>
+
+@optional
 - (void)popTipViewWasDismissedByUser:(CMPopTipView *)popTipView;
+- (void)popTipViewWasDismissedByCallingDismissAnimatedMethod:(CMPopTipView *)popTipView;
+
 @end
