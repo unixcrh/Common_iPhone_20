@@ -55,7 +55,7 @@
     CGFloat pathWidth = _progressBarWidth;
     CGFloat pathPercentage = _progressBarWidth/radius;
     
-    CGFloat radians = DEGREES_2_RADIANS((self.progress*359.9)-90);
+    CGFloat radians = DEGREES_2_RADIANS((self.progress*360)-90);
     CGFloat xOffset = radius*(1 + (1 - pathPercentage/2)*cosf(radians));
     CGFloat yOffset = radius*(1 + (1 - pathPercentage/2)*sinf(radians));
     CGPoint endPoint = CGPointMake(xOffset, yOffset);
@@ -80,8 +80,8 @@
     CGContextFillPath(context);
     CGPathRelease(progressPath);
     
-    CGContextAddEllipseInRect(context, CGRectMake(centerPoint.x - pathWidth/2, 0, pathWidth, pathWidth));
-    CGContextFillPath(context);
+//    CGContextAddEllipseInRect(context, CGRectMake(centerPoint.x - pathWidth/2, 0, pathWidth, pathWidth));
+//    CGContextFillPath(context);
     
     CGContextAddEllipseInRect(context, CGRectMake(endPoint.x - pathWidth/2, endPoint.y - pathWidth/2, pathWidth, pathWidth));
     CGContextFillPath(context);
