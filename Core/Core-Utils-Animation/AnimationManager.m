@@ -169,6 +169,20 @@ AnimationManager *animatinManager;
     
 }
 
++ (CAAnimation *)shakeLeftAndRightFrom:(CGFloat)origin 
+                                    to:(CGFloat)destination 
+                           repeatCount:(int)repeatCount 
+                              duration:(CFTimeInterval)duration
+{
+    CABasicAnimation * animation=[CABasicAnimation animationWithKeyPath:@"transform.rotation.z"]; 
+    animation.fromValue = [NSNumber numberWithFloat:(-origin/180*M_PI)];
+    animation.toValue = [NSNumber numberWithFloat:(origin/180*M_PI)];
+    animation.duration = duration / repeatCount;
+    animation.repeatCount = repeatCount;
+    animation.autoreverses = YES;
+    return animation;
+}
+
 + (CAAnimation *)view:(UIView*)view shakeFor:(CGFloat)margin times:(int)times duration:(CFTimeInterval)duration
 {
     CABasicAnimation * animation=[CABasicAnimation animationWithKeyPath:@"position.y"]; 
