@@ -128,6 +128,82 @@
     
 }
 
+
+
++ (CommonNetworkOutput*)uploadRequest:(NSString *)baseURL 
+                            imageData:(NSData*)imageData 
+                             postDataDict:(NSDictionary *)postDataDict
+                  constructURLHandler:(ConstructURLBlock)constructURLHandler 
+                      responseHandler:(PPNetworkResponseBlock)responseHandler 
+                               output:(CommonNetworkOutput *)output
+{
+    if (baseURL == nil || constructURLHandler == NULL || responseHandler == NULL){
+        PPDebug(@"<sendRequest> failure because baseURL = nil || constructURLHandler = NULL || responseHandler = NULL");
+        return nil;
+    }
+    
+    NSURL* url = [NSURL URLWithString:[constructURLHandler(baseURL) stringByURLEncode]];    
+    if (url == nil){
+        PPDebug(@"<sendRequest> fail to construct URL");
+        output.resultCode = ERROR_CLIENT_URL_NULL;
+        return output;
+    }
+    
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setAllowCompressedResponse:YES];
+    [request setTimeOutSeconds:UPLOAD_TIMEOUT];
+    [request setData:imageData withFileName:@"pp" andContentType:@"image/jpeg" forKey:@"photo"];
+    
+    if ([postDataDict count] != 0) {
+        for (NSString *key in [postDataDict allKeys]) {
+            NSData *data = [postDataDict objectForKey:key];
+            [request addData:data forKey:key];
+        }
+    }
+    
+    int startTime = time(0);
+    PPDebug(@"[SEND] UPLOAD DATA URL=%@", [url description]);    
+    
+    [request startSynchronous];
+    
+    NSError *error = [request error];
+    int statusCode = [request responseStatusCode];
+    
+    PPDebug(@"[RECV] : HTTP status=%d, error=%@", [request responseStatusCode], [error description]);
+    
+    if (error != nil){
+        output.resultCode = ERROR_NETWORK;
+    }
+    else if (statusCode != 200){
+        output.resultCode = statusCode;
+    }
+    else{
+        NSString *text = [request responseString];
+        
+        int endTime = time(0);
+        PPDebug(@"[RECV] data statistic (len=%d bytes, latency=%d seconds, raw=%d bytes, real=%d bytes)", 
+                [text length], (endTime - startTime),
+                [[request rawResponseData] length], [[request responseData] length]);
+        
+        PPDebug(@"[RECV] data = %@", [request responseString]);
+        
+        NSDictionary* dataDict = [text JSONValue];
+        if (dataDict == nil){
+            output.resultCode = ERROR_CLIENT_PARSE_JSON;
+            return output;
+        }
+        
+        output.resultCode = [[dataDict objectForKey:RET_CODE] intValue];
+        responseHandler(dataDict, output);
+        
+        return output;
+    }
+    
+    return output;
+    
+}
+
+
 + (CommonNetworkOutput*)sendRequest:(NSString*)baseURL
                 constructURLHandler:(ConstructURLBlock)constructURLHandler
                     responseHandler:(PPNetworkResponseBlock)responseHandler
