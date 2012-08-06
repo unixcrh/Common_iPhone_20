@@ -183,6 +183,25 @@ AnimationManager *animatinManager;
     return animation;
 }
 
++ (CAAnimationGroup*)raiseAndDismissFrom:(CGPoint)originPoint 
+                                 to:(CGPoint)destinationPoint 
+                           duration:(CFTimeInterval)duration
+{
+    CAAnimation* raise = [AnimationManager translationAnimationFrom:originPoint to:destinationPoint duration:duration ];
+    CAAnimation* dismiss = [AnimationManager missingAnimationWithDuration:duration];
+    CAAnimationGroup* animGroup = [CAAnimationGroup animation];
+    raise.beginTime = 0;
+    dismiss.beginTime = 0;
+    animGroup.removedOnCompletion = NO;
+    animGroup.duration = duration;
+    animGroup.timingFunction      = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];    
+    animGroup.repeatCount         = 1;//FLT_MAX;  //"forever";
+    animGroup.fillMode             = kCAFillModeForwards;
+    animGroup.animations = [NSArray arrayWithObjects:raise, dismiss, nil];
+
+    return animGroup;
+}
+
 + (CAAnimation *)view:(UIView*)view shakeFor:(CGFloat)margin times:(int)times duration:(CFTimeInterval)duration
 {
     CABasicAnimation * animation=[CABasicAnimation animationWithKeyPath:@"position.y"]; 

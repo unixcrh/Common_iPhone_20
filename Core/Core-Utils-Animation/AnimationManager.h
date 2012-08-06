@@ -54,6 +54,9 @@
                                     to:(CGFloat)destination 
                            repeatCount:(int)repeatCount
                               duration:(CFTimeInterval)duration;
++ (CAAnimationGroup *)raiseAndDismissFrom:(CGPoint)originPoint 
+                                  to:(CGPoint)destinationPoint 
+                            duration:(CFTimeInterval)duration;
 
 + (void)popUpView:(UIView *)view 
      fromPosition:(CGPoint)fromPosition 
@@ -69,4 +72,6 @@
 + (void)snowAnimationAtView:(UIView *)view image:(UIImage *)image;
 + (void)snowAnimationAtView:(UIView *)view;
 + (void)fireworksAnimationAtView:(UIView *)view;
+
+
 @end
