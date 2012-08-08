@@ -71,6 +71,16 @@ static NSInteger deviceModel = MODEL_UNKNOWN;
     return platform;
 }
 
++ (BOOL)isRetinaDisplay
+{
+    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] == YES && [[UIScreen mainScreen] scale] == 2.00) {
+        // RETINA DISPLAY
+        return YES;
+    }
+    
+    return NO;
+}
+
 + (int) detectModel{
     NSString *platform = [DeviceDetection platform];
     

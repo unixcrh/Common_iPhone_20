@@ -90,6 +90,7 @@ AnimationManager *animatinManager;
     CABasicAnimation * animation=[CABasicAnimation animationWithKeyPath:@"transform"]; 
     animation.toValue = [ NSValue valueWithCATransform3D: CATransform3DMakeScale(scale, scale, scale)];
     animation.duration = duration;
+    animation.delegate = delegate;
     animation.fillMode = kCAFillModeForwards;
     animation.removedOnCompletion = removedOnCompletion;
     return animation;

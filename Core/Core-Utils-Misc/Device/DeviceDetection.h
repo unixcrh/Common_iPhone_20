@@ -38,5 +38,8 @@ enum {
 
 + (NSString *)deviceOS;
 + (NSString *)platform;
++ (BOOL) isRetinaDisplay;
+
+
 
 @end
