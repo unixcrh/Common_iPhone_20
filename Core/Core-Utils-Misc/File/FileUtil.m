@@ -90,4 +90,13 @@
     return url;
 }
 
++ (NSString*)getFileNameByFullPath:(NSString *)path
+{
+    NSArray* stringArray = [path componentsSeparatedByString:@"/Documents/"];
+    if (stringArray.count == 2) {
+        return (NSString*)[stringArray objectAtIndex:1];
+    }
+    return nil;
+}
+
 @end
