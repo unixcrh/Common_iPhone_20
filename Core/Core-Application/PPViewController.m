@@ -403,6 +403,7 @@
 	[self createAddressBook];
 	[self showBackgroundImage];
 	[self registerKeyboardNotification];
+    notifications = [[NSMutableDictionary dictionary] retain];
 
 	[super viewDidLoad];
 }
@@ -469,6 +470,7 @@
     PPRelease(selectedImage);
 	PPRelease(titleSegControl);
 	PPRelease(alertView);
+    PPRelease(notifications);
     
 	[super dealloc];
 }
@@ -1061,6 +1063,46 @@
                                                     blue:0xFE/255.0 
                                                    alpha:1]];
     return scrollView;   
+}
+
+
+- (void)registerNotificationWithName:(NSString *)name 
+                              object:(id)obj 
+                               queue:(NSOperationQueue *)queue
+                          usingBlock:(void (^)(NSNotification *note))block
+{
+    NSNotification *notification = [[NSNotificationCenter defaultCenter] 
+                                    addObserverForName:name
+                                    object:nil     
+                                    queue:[NSOperationQueue mainQueue]     
+                                    usingBlock:block];
+    
+    [notifications setObject:notification forKey:name];
+}
+
+
+- (void)unregisterNotificationWithName:(NSString *)name
+{
+    PPDebug(@"unregister notification:<%@>", [notifications description]);
+    NSNotification *notification = [notifications objectForKey:name];
+    [[NSNotificationCenter defaultCenter] removeObserver:notification];
+    [notifications removeObjectForKey:name];
+}
+
+- (void)unregisterAllNotifications
+{
+    PPDebug(@"unregisterNotifications");
+        
+    [notifications enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        
+//        if ([obj isKindOfClass:[NSNotification class]]) {
+            NSNotification *notification = (NSNotification *)obj;
+            [[NSNotificationCenter defaultCenter] removeObserver:notification];
+//        }
+        
+    }];    
+    
+    [notifications removeAllObjects];
 }
 
 @end

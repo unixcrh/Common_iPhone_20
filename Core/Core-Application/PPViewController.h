@@ -50,6 +50,7 @@
     
     UIKeyboardType          currentKeyboardType;
     UIBlankView             *blankView;
+    NSMutableDictionary     *notifications;             
 }
 
 @property (nonatomic, assign) BOOL                  enableAddressBook;
@@ -145,4 +146,14 @@
 
 - (UIViewController *)superViewControllerForClass:(Class)controllerClass;
 - (BOOL)hasSuperViewControllerForClass:(Class)controllerClass;
+
+
+- (void)registerNotificationWithName:(NSString *)name 
+                              object:(id)obj 
+                               queue:(NSOperationQueue *)queue
+                          usingBlock:(void (^)(NSNotification *note))block;
+
+- (void)unregisterNotificationWithName:(NSString *)name;
+- (void)unregisterAllNotifications;
+
 @end
