@@ -1083,16 +1083,13 @@
 
 - (void)unregisterNotificationWithName:(NSString *)name
 {
-    PPDebug(@"unregister notification:<%@>", [notifications description]);
     NSNotification *notification = [notifications objectForKey:name];
     [[NSNotificationCenter defaultCenter] removeObserver:notification];
     [notifications removeObjectForKey:name];
 }
 
 - (void)unregisterAllNotifications
-{
-    PPDebug(@"unregisterNotifications");
-        
+{        
     [notifications enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         
 //        if ([obj isKindOfClass:[NSNotification class]]) {
