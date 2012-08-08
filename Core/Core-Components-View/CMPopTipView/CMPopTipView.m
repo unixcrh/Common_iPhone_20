@@ -46,7 +46,7 @@
 
 - (CGRect)bubbleFrame {
 	CGRect bubbleFrame;
-	if (pointDirection == PointDirectionUp) {
+	if (_pointDirection == PointDirectionUp) {
 		bubbleFrame = CGRectMake(2.0, targetPoint.y+pointerSize, bubbleSize.width, bubbleSize.height);
 	}
 	else {
@@ -84,7 +84,7 @@
     
 	CGMutablePathRef bubblePath = CGPathCreateMutable();
 	
-	if (pointDirection == PointDirectionUp) {
+	if (_pointDirection == PointDirectionUp) {
 		CGPathMoveToPoint(bubblePath, NULL, targetPoint.x, targetPoint.y);
 		CGPathAddLineToPoint(bubblePath, NULL, targetPoint.x+pointerSize, targetPoint.y+pointerSize);
 		
@@ -218,7 +218,19 @@
     }
 }
 
-- (void)presentPointingAtView:(UIView *)targetView inView:(UIView *)containerView animated:(BOOL)animated {
+- (void)presentPointingAtView:(UIView *)targetView 
+                       inView:(UIView *)containerView 
+                     animated:(BOOL)animated {
+    [self presentPointingAtView:targetView
+                         inView:containerView 
+                       animated:animated 
+                 pointDirection:PointDirectionAuto];
+}
+
+- (void)presentPointingAtView:(UIView *)targetView 
+                       inView:(UIView *)containerView 
+                     animated:(BOOL)animated 
+               pointDirection:(PointDirection)pointDirection{
 	if (!self.targetObject) {
 		self.targetObject = targetView;
 	}
@@ -275,26 +287,45 @@
     
 	CGFloat pointerY;	// Y coordinate of pointer target (within containerView)
 	
-	if (targetRelativeOrigin.y+targetView.bounds.size.height < containerRelativeOrigin.y) {
-		pointerY = 0.0;
-		pointDirection = PointDirectionUp;
-	}
-	else if (targetRelativeOrigin.y > containerRelativeOrigin.y+containerView.bounds.size.height) {
-		pointerY = containerView.bounds.size.height;
-		pointDirection = PointDirectionDown;
-	}
-	else {
-		CGPoint targetOriginInContainer = [targetView convertPoint:CGPointMake(0.0, 0.0) toView:containerView];
-		CGFloat sizeBelow = containerView.bounds.size.height - targetOriginInContainer.y;
-		if (sizeBelow > targetOriginInContainer.y) {
-			pointerY = targetOriginInContainer.y + targetView.bounds.size.height;
-			pointDirection = PointDirectionUp;
-		}
-		else {
-			pointerY = targetOriginInContainer.y;
-			pointDirection = PointDirectionDown;
-		}
-	}
+    if (pointDirection == PointDirectionAuto) {
+        if (targetRelativeOrigin.y+targetView.bounds.size.height < containerRelativeOrigin.y) {
+            pointerY = 0.0;
+            _pointDirection = PointDirectionUp;
+        }
+        else if (targetRelativeOrigin.y > containerRelativeOrigin.y+containerView.bounds.size.height) {
+            pointerY = containerView.bounds.size.height;
+            _pointDirection = PointDirectionDown;
+        }
+        else {
+            CGPoint targetOriginInContainer = [targetView convertPoint:CGPointMake(0.0, 0.0) toView:containerView];
+            CGFloat sizeBelow = containerView.bounds.size.height - targetOriginInContainer.y;
+            if (sizeBelow > targetOriginInContainer.y) {
+                pointerY = targetOriginInContainer.y + targetView.bounds.size.height;
+                _pointDirection = PointDirectionUp;
+            }
+            else {
+                pointerY = targetOriginInContainer.y;
+                _pointDirection = PointDirectionDown;
+            }
+        }
+    }else {
+        _pointDirection = pointDirection;
+        if (targetRelativeOrigin.y+targetView.bounds.size.height < containerRelativeOrigin.y) {
+            pointerY = 0.0;
+        }
+        else if (targetRelativeOrigin.y > containerRelativeOrigin.y+containerView.bounds.size.height) {
+            pointerY = containerView.bounds.size.height;
+        }
+        else {
+            CGPoint targetOriginInContainer = [targetView convertPoint:CGPointMake(0.0, 0.0) toView:containerView];
+            if (pointDirection == PointDirectionUp) {
+                pointerY = targetOriginInContainer.y + targetView.bounds.size.height;
+            }
+            else {
+                pointerY = targetOriginInContainer.y;
+            }
+        }
+    }
 	
 	CGFloat W = containerView.frame.size.width;
 	
@@ -316,7 +347,7 @@
 	
 	CGFloat fullHeight = bubbleSize.height + pointerSize + 10.0;
 	CGFloat y_b;
-	if (pointDirection == PointDirectionUp) {
+	if (_pointDirection == PointDirectionUp) {
 		y_b = topMargin + pointerY;
 		targetPoint = CGPointMake(x_p-x_b, 0);
 	}
@@ -470,7 +501,7 @@
 }
 
 - (PointDirection) getPointDirection {
-  return pointDirection;
+  return _pointDirection;
 }
 
 - (id)initWithMessage:(NSString *)messageToShow {

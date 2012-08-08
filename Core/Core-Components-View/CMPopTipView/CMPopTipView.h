@@ -85,7 +85,8 @@
 
 typedef enum {
 	PointDirectionUp = 0,
-	PointDirectionDown
+	PointDirectionDown,
+    PointDirectionAuto
 } PointDirection;
 
 typedef enum {
@@ -112,7 +113,7 @@ typedef enum {
 	BOOL					highlight;
 	CGFloat					sidePadding;
 	CGFloat					topMargin;
-	PointDirection			pointDirection;
+	PointDirection			_pointDirection;
 	CGFloat					pointerSize;
 	CGPoint					targetPoint;
     
@@ -138,7 +139,16 @@ typedef enum {
 - (id)initWithCustomView:(UIView *)aView;
 - (id)initWithCustomView:(UIView *)aView needBubblePath:(BOOL)needBubblePath;
 
-- (void)presentPointingAtView:(UIView *)targetView inView:(UIView *)containerView animated:(BOOL)animated;
+- (void)presentPointingAtView:(UIView *)targetView 
+                       inView:(UIView *)containerView
+                     animated:(BOOL)animated;
+
+- (void)presentPointingAtView:(UIView *)targetView
+                       inView:(UIView *)containerView 
+                     animated:(BOOL)animated
+               pointDirection:(PointDirection)pointDirection;
+
+
 - (void)presentPointingAtBarButtonItem:(UIBarButtonItem *)barButtonItem animated:(BOOL)animated;
 - (void)dismissAnimated:(BOOL)animated;
 
