@@ -200,6 +200,52 @@ static CoreDataManager* _defaultDataManager;
 	return objects;
 }
 
+
+- (NSArray*)execute:(NSString*)fetchRequestName 
+             sortBy:(NSString*)keyName 
+       returnFields:(NSArray *)returnFields
+          ascending:(BOOL)ascending 
+             offset:(NSInteger)offset 
+              limit:(NSInteger)limit
+{    
+    
+    NSDictionary* dict = [NSDictionary dictionary];
+	NSFetchRequest* fq = [self.managedObjectModel fetchRequestFromTemplateWithName:fetchRequestName 
+                                                             substitutionVariables:dict];
+    
+    if (fq == nil){
+        PPDebug(@"<execute> execute fetch request (%@) fail, cannot create fetch request", fetchRequestName);
+        return nil;
+    }
+	
+	// set sorted rules
+	NSSortDescriptor* sortDescriptor = [[NSSortDescriptor alloc] initWithKey:keyName ascending:ascending];
+	NSArray* sortDescriptors = [[NSArray alloc] initWithObjects: sortDescriptor, nil];
+	[fq setSortDescriptors:sortDescriptors];
+	[sortDescriptors release];		
+	[sortDescriptor release];
+    if ([returnFields count] != 0) {
+        [fq setPropertiesToFetch:returnFields];   
+        PPDebug(@"return fields = %@", [returnFields description]);
+    }
+
+    [fq setFetchLimit:limit];
+    [fq setFetchOffset:offset];
+//    [fq setResultType:NSFetchRequestType];
+	NSError* error = nil;
+	NSArray* objects = [self.managedObjectContext executeFetchRequest:fq error:&error];
+	if (error == nil){
+		PPDebug(@"<execute> execute fetch request (%@) successfully, total %d record", fetchRequestName, [objects count]);
+	}
+	else {
+		PPDebug(@"<execute> execute fetch request (%@), error=%@", fetchRequestName, [error localizedDescription]);
+	}		
+    
+    
+	return objects;
+}
+
+
 - (NSObject*)execute:(NSString*)fetchRequestName forKey:(NSString*)primaryKey value:(NSObject*)value 
 {
 	if (primaryKey == nil || value == nil || fetchRequestName == nil)

@@ -30,8 +30,13 @@
 
 + (id)defaultManager;
 + (id)dataManager;
-- (id)initWithDBName:(NSString*)name dataModelName:(NSString*)dmName;
-- (id)initWithDBName:(NSString*)name dataModelName:(NSString*)dmName hasWorkingQueue:(BOOL)hasWorkingQueue sharePersisitentStore:(NSPersistentStoreCoordinator*)sharePersisitentStore;
+- (id)initWithDBName:(NSString*)name 
+       dataModelName:(NSString*)dmName;
+
+- (id)initWithDBName:(NSString*)name 
+       dataModelName:(NSString*)dmName 
+     hasWorkingQueue:(BOOL)hasWorkingQueue 
+sharePersisitentStore:(NSPersistentStoreCoordinator*)sharePersisitentStore;
 
 - (NSString *)applicationDocumentsDirectory;
 
@@ -40,10 +45,32 @@
 - (BOOL)del:(NSManagedObject*)object;
 
 - (NSArray*)execute:(NSString*)fetchRequestName;
-- (NSArray*)execute:(NSString*)fetchRequestName sortBy:(NSString*)keyName ascending:(BOOL)ascending;
-- (NSObject*)execute:(NSString*)fetchRequestName forKey:(NSString*)primaryKey value:(NSObject*)value;
-- (NSArray*)execute:(NSString*)fetchRequestName forKey:(NSString*)key value:(NSObject*)value sortBy:(NSString*)sortKey ascending:(BOOL)ascending;
-- (NSArray*)execute:(NSString*)fetchRequestName keyValues:(NSDictionary*)keyValues sortBy:(NSString*)sortKey ascending:(BOOL)ascending;
+
+- (NSArray*)execute:(NSString*)fetchRequestName 
+             sortBy:(NSString*)keyName 
+          ascending:(BOOL)ascending;
+
+- (NSArray*)execute:(NSString*)fetchRequestName 
+             sortBy:(NSString*)keyName 
+       returnFields:(NSArray *)returnFields
+          ascending:(BOOL)ascending 
+             offset:(NSInteger)offset 
+              limit:(NSInteger)limit;
+
+- (NSObject*)execute:(NSString*)fetchRequestName 
+              forKey:(NSString*)primaryKey
+               value:(NSObject*)value;
+
+- (NSArray*)execute:(NSString*)fetchRequestName 
+             forKey:(NSString*)key 
+              value:(NSObject*)value
+             sortBy:(NSString*)sortKey 
+          ascending:(BOOL)ascending;
+
+- (NSArray*)execute:(NSString*)fetchRequestName
+          keyValues:(NSDictionary*)keyValues
+             sortBy:(NSString*)sortKey 
+          ascending:(BOOL)ascending;
 
 //- (BOOL)saveInQueue;
 //- (id)insertInQueue:(NSString*)entityName;
