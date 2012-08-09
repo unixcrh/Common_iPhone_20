@@ -14,5 +14,5 @@
 @property(nonatomic, strong) UIColor *progressTintColor;
 @property(nonatomic, assign) float progressBarWidth;
 @property (nonatomic) float progress;
-
+@property (nonatomic, assign) BOOL clockwise;
 @end
