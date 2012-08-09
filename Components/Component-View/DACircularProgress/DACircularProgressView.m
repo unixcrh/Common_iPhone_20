@@ -16,6 +16,7 @@
 @synthesize progressTintColor =_progressTintColor;
 @synthesize progress = _progress;
 @synthesize progressBarWidth = _progressBarWidth;
+@synthesize clockwise = _clockwise;
 
 - (id)init
 {
@@ -55,9 +56,15 @@
     CGFloat pathWidth = _progressBarWidth;
     CGFloat pathPercentage = _progressBarWidth/radius;
     
-    CGFloat radians = DEGREES_2_RADIANS((self.progress*360)-90);
+    CGFloat radians;
+    if (self.clockwise) {
+        radians = DEGREES_2_RADIANS(270+((1-self.progress)*360));
+    } else {
+        radians = DEGREES_2_RADIANS((self.progress*360)-90);
+    }
     CGFloat xOffset = radius*(1 + (1 - pathPercentage/2)*cosf(radians));
     CGFloat yOffset = radius*(1 + (1 - pathPercentage/2)*sinf(radians));
+    
     CGPoint endPoint = CGPointMake(xOffset, yOffset);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -74,7 +81,7 @@
     [self.progressTintColor setFill];
     CGMutablePathRef progressPath = CGPathCreateMutable();
     CGPathMoveToPoint(progressPath, NULL, centerPoint.x, centerPoint.y);
-    CGPathAddArc(progressPath, NULL, centerPoint.x, centerPoint.y, radius, DEGREES_2_RADIANS(270), radians, NO);
+    CGPathAddArc(progressPath, NULL, centerPoint.x, centerPoint.y, radius, DEGREES_2_RADIANS(270), radians, self.clockwise);
     CGPathCloseSubpath(progressPath);
     CGContextAddPath(context, progressPath);
     CGContextFillPath(context);
