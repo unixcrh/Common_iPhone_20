@@ -92,11 +92,11 @@
 
 + (NSString*)getFileNameByFullPath:(NSString *)path
 {
-    NSArray* stringArray = [path componentsSeparatedByString:@"/Documents/"];
-    if (stringArray.count == 2) {
-        return (NSString*)[stringArray objectAtIndex:1];
+    NSArray* stringArray = [path componentsSeparatedByString:@"/"];
+    if (stringArray.count > 1) {
+        return (NSString*)[stringArray objectAtIndex:(stringArray.count-1)];
     }
-    return nil;
+    return path;
 }
 
 @end
